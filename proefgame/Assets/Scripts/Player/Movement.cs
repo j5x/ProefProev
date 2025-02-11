@@ -11,13 +11,14 @@ namespace Platformer.Mechanics
 {
     /// <summary>
     /// This is the main class used to implement control of the player.
-    /// This version is simplified to work without animations, suitable for a cube or other simple objects.
+    /// This version includes a dash mechanic and works without animations.
     /// </summary>
     public class Movement : KinematicObject
     {
         public AudioClip jumpAudio;
         public AudioClip respawnAudio;
         public AudioClip ouchAudio;
+        public AudioClip dashAudio; // Audio clip for dash
 
         /// <summary>
         /// Max horizontal speed of the player.
@@ -28,6 +29,21 @@ namespace Platformer.Mechanics
         /// </summary>
         public float jumpTakeOffSpeed = 7;
 
+        /// <summary>
+        /// Dash speed multiplier.
+        /// </summary>
+        public float dashSpeed = 14;
+
+        /// <summary>
+        /// Duration of the dash in seconds.
+        /// </summary>
+        public float dashDuration = 0.2f;
+
+        /// <summary>
+        /// Cooldown time for the dash in seconds.
+        /// </summary>
+        public float dashCooldown = 1f;
+
         public JumpState jumpState = JumpState.Grounded;
         private bool stopJump;
         public Collider2D collider2d;
@@ -37,11 +53,15 @@ namespace Platformer.Mechanics
 
         bool jump;
         Vector2 move;
+        bool isDashing;
+        float dashEndTime;
+        float dashCooldownEndTime;
 
         readonly PlatformerModel model = Simulation.GetModel<PlatformerModel>();
 
         private InputAction m_MoveAction;
         private InputAction m_JumpAction;
+        private InputAction m_DashAction;
 
         public Bounds Bounds => collider2d.bounds;
 
@@ -53,9 +73,11 @@ namespace Platformer.Mechanics
 
             m_MoveAction = InputSystem.actions.FindAction("Player/Move");
             m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
-            
+            m_DashAction = InputSystem.actions.FindAction("Player/Dash"); // Dash action
+
             m_MoveAction.Enable();
             m_JumpAction.Enable();
+            m_DashAction.Enable();
         }
 
         protected override void Update()
@@ -63,6 +85,7 @@ namespace Platformer.Mechanics
             if (controlEnabled)
             {
                 move.x = m_MoveAction.ReadValue<Vector2>().x;
+
                 if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
                     jumpState = JumpState.PrepareToJump;
                 else if (m_JumpAction.WasReleasedThisFrame())
@@ -70,12 +93,20 @@ namespace Platformer.Mechanics
                     stopJump = true;
                     Schedule<PlayerStopJump>().movement = this;
                 }
+
+                // Check for dash input
+                if (m_DashAction.WasPressedThisFrame() && Time.time >= dashCooldownEndTime)
+                {
+                    StartDash();
+                }
             }
             else
             {
                 move.x = 0;
             }
+
             UpdateJumpState();
+            UpdateDashState();
             base.Update();
         }
 
@@ -109,6 +140,30 @@ namespace Platformer.Mechanics
             }
         }
 
+        void StartDash()
+        {
+            if (!isDashing)
+            {
+                isDashing = true;
+                dashEndTime = Time.time + dashDuration;
+                dashCooldownEndTime = Time.time + dashCooldown;
+
+                // Play dash audio if available
+                if (dashAudio != null)
+                {
+                    audioSource.PlayOneShot(dashAudio);
+                }
+            }
+        }
+
+        void UpdateDashState()
+        {
+            if (isDashing && Time.time >= dashEndTime)
+            {
+                isDashing = false;
+            }
+        }
+
         protected override void ComputeVelocity()
         {
             if (jump && IsGrounded)
@@ -125,7 +180,15 @@ namespace Platformer.Mechanics
                 }
             }
 
-            targetVelocity = move * maxSpeed;
+            // Apply dash velocity if dashing
+            if (isDashing)
+            {
+                targetVelocity = new Vector2(move.x * dashSpeed, velocity.y);
+            }
+            else
+            {
+                targetVelocity = move * maxSpeed;
+            }
         }
 
         public enum JumpState
