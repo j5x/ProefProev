@@ -10,16 +10,26 @@ namespace Platform
         public float waitTime = 0.5f; // Time to wait before resetting
 
         private InputAction moveDownAction;
+        private Collider2D platformCollider;
 
         void Start()
         {
             effector = GetComponent<PlatformEffector2D>();
+            platformCollider = GetComponent<Collider2D>();
 
-            // Find the "Down" action in the Input Action Asset
-            moveDownAction = InputSystem.actions.FindAction("Move/WASD/Down");
+            // Get the "Move" action from the Input System
+            var inputActionAsset = InputSystem.actions;
+            if (inputActionAsset == null)
+            {
+                Debug.LogError("Input Action Asset is not assigned or found.");
+                return;
+            }
+
+            // Find the "Move" action
+            moveDownAction = inputActionAsset.FindAction("Move");
             if (moveDownAction == null)
             {
-                Debug.LogError("Could not find 'Player/Down' action in Input System. Please ensure the action is defined in your Input Action Asset.");
+                Debug.LogError("Could not find 'Move' action in Input System. Please ensure the action is defined in your Input Action Asset.");
                 return;
             }
 
@@ -28,8 +38,8 @@ namespace Platform
 
         void Update()
         {
-            // Check if the "Down" action was pressed this frame
-            if (moveDownAction != null && moveDownAction.WasPressedThisFrame())
+            // Check if the "Down" key (S key) was pressed this frame
+            if (moveDownAction != null && moveDownAction.ReadValue<Vector2>().y < 0)
             {
                 StartCoroutine(DisableCollision());
             }
@@ -37,12 +47,15 @@ namespace Platform
 
         IEnumerator DisableCollision()
         {
-            // Disable collision with the player layer
-            effector.colliderMask &= ~(1 << LayerMask.NameToLayer("Player"));
+            // Temporarily disable collision with the player
+            effector.rotationalOffset = 180f; // Flip the effector to allow passing through
+            platformCollider.enabled = false; // Disable the collider entirely
+
             yield return new WaitForSeconds(waitTime);
 
-            // Re-enable collision with the player layer
-            effector.colliderMask |= (1 << LayerMask.NameToLayer("Player"));
+            // Re-enable collision with the player
+            platformCollider.enabled = true; // Re-enable the collider
+            effector.rotationalOffset = 0f; // Reset the effector to its original state
         }
 
         private void OnDestroy()
