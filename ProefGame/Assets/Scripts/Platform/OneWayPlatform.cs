@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,10 +6,9 @@ namespace Platform
     public class OneWayPlatform : MonoBehaviour
     {
         private PlatformEffector2D effector;
-        public float waitTime = 0.5f; // Time to wait before resetting
+        private Collider2D platformCollider;
 
         private InputAction moveDownAction;
-        private Collider2D platformCollider;
 
         void Start()
         {
@@ -41,21 +39,35 @@ namespace Platform
             // Check if the "Down" key (S key) was pressed this frame
             if (moveDownAction != null && moveDownAction.ReadValue<Vector2>().y < 0)
             {
-                StartCoroutine(DisableCollision());
+                // Temporarily disable collision to allow the player to drop down
+                platformCollider.enabled = false;
+                Invoke(nameof(ReenableCollision), 0.5f); // Re-enable collision after a short delay
             }
         }
 
-        IEnumerator DisableCollision()
+        private void OnTriggerStay2D(Collider2D collision)
         {
-            // Temporarily disable collision with the player
-            effector.rotationalOffset = 180f; // Flip the effector to allow passing through
-            platformCollider.enabled = false; // Disable the collider entirely
+            // Check if the colliding object is the player
+            if (collision.CompareTag("Player"))
+            {
+                // Check if the player is below the platform
+                if (collision.transform.position.y < transform.position.y)
+                {
+                    // Disable the platform collider to allow the player to jump through
+                    platformCollider.enabled = false;
+                }
+                else
+                {
+                    // Re-enable the platform collider if the player is above
+                    platformCollider.enabled = true;
+                }
+            }
+        }
 
-            yield return new WaitForSeconds(waitTime);
-
-            // Re-enable collision with the player
-            platformCollider.enabled = true; // Re-enable the collider
-            effector.rotationalOffset = 0f; // Reset the effector to its original state
+        private void ReenableCollision()
+        {
+            // Re-enable the platform collider after dropping down
+            platformCollider.enabled = true;
         }
 
         private void OnDestroy()
