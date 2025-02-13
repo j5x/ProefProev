@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "AuraShield",
+                    "type": "Button",
+                    "id": "467bfa7f-8a0f-4af6-8294-0f315292e5b6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Dash",
                     "type": "Button",
                     "id": "298d5995-d4f4-4e5a-b776-214a2ac788b0",
@@ -521,6 +530,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c2da5c45-4bc0-4c2f-8df9-0a600d6f4f8c",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AuraShield",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
