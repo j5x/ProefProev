@@ -53,10 +53,15 @@ namespace Platformer.Mechanics
             sprites = collectedAnimation;
             if (controller != null)
                 collected = true;
+
+            // Notify CoinManager to add coins
+            CoinManager.Instance.AddCoins(1); // Assuming each token is worth 1 coin
+
             //send an event into the gameplay system to perform some behaviour.
             var ev = Schedule<PlayerTokenCollision>();
             ev.token = this;
             ev.player = player;
         }
+
     }
 }
