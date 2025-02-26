@@ -43,16 +43,11 @@ namespace Player
             // Convert snapped angle back to a unit direction vector
             aimDirection = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
-            // Flip player sprite based on aiming direction
-            if (aimDirection.x < 0 && isMovingRight)
+            // Flip the sprite instead of scaling the transform
+            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
             {
-                isMovingRight = false;
-                transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else if (aimDirection.x > 0 && !isMovingRight)
-            {
-                isMovingRight = true;
-                transform.localScale = new Vector3(1, 1, 1);
+                spriteRenderer.flipX = aimDirection.x < 0;
             }
 
             // Move the shooting point to the offset position
