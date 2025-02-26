@@ -15,6 +15,7 @@ public class AuraShield : MonoBehaviour
 
     private InputAction m_AuraShieldAction; // Input action for the shield
     private Health playerHealth; // Reference to the player's Health component
+    private GameObject shieldInstance; // Reference to the instantiated shield
 
     void Awake()
     {
@@ -38,7 +39,7 @@ public class AuraShield : MonoBehaviour
     void ActivateShield()
     {
         // Instantiate the shield prefab at the player's position
-        GameObject shieldInstance = Instantiate(shieldPrefab, transform.position, Quaternion.identity);
+        shieldInstance = Instantiate(shieldPrefab, transform.position, Quaternion.identity);
         shieldInstance.transform.SetParent(transform); // Make the shield a child of the player
 
         // Make the player invulnerable
@@ -62,10 +63,10 @@ public class AuraShield : MonoBehaviour
         // Make the player vulnerable again
         playerHealth.SetInvulnerable(false);
 
-        // Destroy the shield instance
-        if (transform.childCount > 0)
+        // Destroy the shield instance (if it exists)
+        if (shieldInstance != null)
         {
-            Destroy(transform.GetChild(0).gameObject);
+            Destroy(shieldInstance);
         }
 
         // Set shield state to inactive
