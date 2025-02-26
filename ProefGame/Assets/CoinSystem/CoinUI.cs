@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class CoinUI : MonoBehaviour
 {
-    public Text coinText;
+    [SerializeField] private Text coinText; // Make sure this is serialized
 
     private void Start()
     {
