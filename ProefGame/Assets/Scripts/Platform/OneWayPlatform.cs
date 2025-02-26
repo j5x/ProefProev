@@ -5,17 +5,17 @@ namespace Platform
 {
     public class OneWayPlatform : MonoBehaviour
     {
-        private PlatformEffector2D effector;
+        public float disableDuration = 0.5f; // Duration to disable collision
         private Collider2D platformCollider;
 
         private InputAction moveDownAction;
+        private InputAction jumpAction;
 
-        void Start()
+        private void Start()
         {
-            effector = GetComponent<PlatformEffector2D>();
             platformCollider = GetComponent<Collider2D>();
 
-            // Get the "Move" action from the Input System
+            // Get the input actions from the Input System
             var inputActionAsset = InputSystem.actions;
             if (inputActionAsset == null)
             {
@@ -23,60 +23,47 @@ namespace Platform
                 return;
             }
 
-            // Find the "Move" action
+            // Find the "Move" and "Jump" actions
             moveDownAction = inputActionAsset.FindAction("Move");
-            if (moveDownAction == null)
+            jumpAction = inputActionAsset.FindAction("Jump");
+
+            if (moveDownAction == null || jumpAction == null)
             {
-                Debug.LogError("Could not find 'Move' action in Input System. Please ensure the action is defined in your Input Action Asset.");
+                Debug.LogError("Could not find 'Move' or 'Jump' action in Input System. Please ensure the actions are defined in your Input Action Asset.");
                 return;
             }
 
             moveDownAction.Enable();
+            jumpAction.Enable();
         }
 
-        void Update()
+        private void Update()
         {
             // Check if the "Down" key (S key) was pressed this frame
             if (moveDownAction != null && moveDownAction.ReadValue<Vector2>().y < 0)
             {
-                // Temporarily disable collision to allow the player to drop down
-                platformCollider.enabled = false;
-                Invoke(nameof(ReenableCollision), 0.5f); // Re-enable collision after a short delay
+                DisableCollision();
             }
-        }
 
-        private void OnTriggerStay2D(Collider2D collision)
-        {
-            // Check if the colliding object is the player
-            if (collision.CompareTag("Player"))
+            // Check if the "Jump" key was pressed this frame
+            if (jumpAction != null && jumpAction.WasPressedThisFrame())
             {
-                // Check if the player is below the platform
-                if (collision.transform.position.y < transform.position.y)
-                {
-                    // Disable the platform collider to allow the player to jump through
-                    platformCollider.enabled = false;
-                }
-                else
-                {
-                    // Re-enable the platform collider if the player is above
-                    platformCollider.enabled = true;
-                }
+                DisableCollision();
             }
         }
 
-        private void ReenableCollision()
+        private void DisableCollision()
         {
-            // Re-enable the platform collider after dropping down
+            // Disable the platform's collider
+            platformCollider.enabled = false;
+
+            // Re-enable the collider after the specified duration
+            Invoke(nameof(ReEnableCollider), disableDuration);
+        }
+
+        private void ReEnableCollider()
+        {
             platformCollider.enabled = true;
-        }
-
-        private void OnDestroy()
-        {
-            // Disable the input action when the object is destroyed
-            if (moveDownAction != null)
-            {
-                moveDownAction.Disable();
-            }
         }
     }
 }

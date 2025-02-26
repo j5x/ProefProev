@@ -616,6 +616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec497364306c0b24e9f52d6a9959ac23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableDuration: 0.5
 --- !u!251 &1823194591
 PlatformEffector2D:
   m_ObjectHideFlags: 0
