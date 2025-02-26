@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,18 +5,17 @@ namespace Platform
 {
     public class OneWayPlatform : MonoBehaviour
     {
-        private PlatformEffector2D effector;
-        public float waitTime = 0.5f; // Time to wait before resetting
-
-        private InputAction moveDownAction;
+        public float disableDuration = 0.5f; // Duration to disable collision
         private Collider2D platformCollider;
 
-        void Start()
+        private InputAction moveDownAction;
+        private InputAction jumpAction;
+
+        private void Start()
         {
-            effector = GetComponent<PlatformEffector2D>();
             platformCollider = GetComponent<Collider2D>();
 
-            // Get the "Move" action from the Input System
+            // Get the input actions from the Input System
             var inputActionAsset = InputSystem.actions;
             if (inputActionAsset == null)
             {
@@ -25,46 +23,47 @@ namespace Platform
                 return;
             }
 
-            // Find the "Move" action
+            // Find the "Move" and "Jump" actions
             moveDownAction = inputActionAsset.FindAction("Move");
-            if (moveDownAction == null)
+            jumpAction = inputActionAsset.FindAction("Jump");
+
+            if (moveDownAction == null || jumpAction == null)
             {
-                Debug.LogError("Could not find 'Move' action in Input System. Please ensure the action is defined in your Input Action Asset.");
+                Debug.LogError("Could not find 'Move' or 'Jump' action in Input System. Please ensure the actions are defined in your Input Action Asset.");
                 return;
             }
 
             moveDownAction.Enable();
+            jumpAction.Enable();
         }
 
-        void Update()
+        private void Update()
         {
             // Check if the "Down" key (S key) was pressed this frame
             if (moveDownAction != null && moveDownAction.ReadValue<Vector2>().y < 0)
             {
-                StartCoroutine(DisableCollision());
+                DisableCollision();
             }
-        }
 
-        IEnumerator DisableCollision()
-        {
-            // Temporarily disable collision with the player
-            effector.rotationalOffset = 180f; // Flip the effector to allow passing through
-            platformCollider.enabled = false; // Disable the collider entirely
-
-            yield return new WaitForSeconds(waitTime);
-
-            // Re-enable collision with the player
-            platformCollider.enabled = true; // Re-enable the collider
-            effector.rotationalOffset = 0f; // Reset the effector to its original state
-        }
-
-        private void OnDestroy()
-        {
-            // Disable the input action when the object is destroyed
-            if (moveDownAction != null)
+            // Check if the "Jump" key was pressed this frame
+            if (jumpAction != null && jumpAction.WasPressedThisFrame())
             {
-                moveDownAction.Disable();
+                DisableCollision();
             }
+        }
+
+        private void DisableCollision()
+        {
+            // Disable the platform's collider
+            platformCollider.enabled = false;
+
+            // Re-enable the collider after the specified duration
+            Invoke(nameof(ReEnableCollider), disableDuration);
+        }
+
+        private void ReEnableCollider()
+        {
+            platformCollider.enabled = true;
         }
     }
 }
