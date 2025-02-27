@@ -7,12 +7,21 @@ namespace Player
     {
         public Transform shootingPoint;
         public GameObject bulletPrefab;
+        public GameObject aimMarkerPrefab;
         public float bulletSpeed = 10f;
         public float shootingOffset = 1.25f; // Distance from player
 
+        private GameObject aimMarker;
         private Vector2 aimDirection;
-        private bool isMovingRight = true; // Used for flipping
-        private bool allowDiagonalShooting = false; // Toggled via modifier key
+
+        private void Start()
+        {
+            // Instantiate the aiming marker
+            if (aimMarkerPrefab != null)
+            {
+                aimMarker = Instantiate(aimMarkerPrefab);
+            }
+        }
 
         private void Update()
         {
@@ -30,55 +39,26 @@ namespace Player
             Vector2 worldMousePos = Camera.main.ScreenToWorldPoint(mousePos);
             Vector2 playerPos = transform.position;
 
-            // Calculate direction from player to mouse
-            Vector2 rawDirection = (worldMousePos - playerPos).normalized;
+            // Calculate aim direction
+            aimDirection = (worldMousePos - playerPos).normalized;
 
-            // Check if modifier key is pressed for diagonal shooting
-            allowDiagonalShooting = Keyboard.current.leftShiftKey.isPressed;
+            // Move the shooting point
+            shootingPoint.position = playerPos + (aimDirection * shootingOffset);
+            shootingPoint.right = aimDirection; // Rotate shooting point to face aim direction
 
-            // Snap aiming to allowed angles
-            float angle = Mathf.Atan2(rawDirection.y, rawDirection.x) * Mathf.Rad2Deg;
-            angle = SnapToAllowedAngle(angle);
-
-            // Convert snapped angle back to a unit direction vector
-            aimDirection = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
-
-            // Flip the sprite instead of scaling the transform
-            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            // Move and rotate the aim marker
+            if (aimMarker != null)
             {
-                spriteRenderer.flipX = aimDirection.x < 0;
+                aimMarker.transform.position = shootingPoint.position;
+                aimMarker.transform.rotation = shootingPoint.rotation;
             }
 
-            // Move the shooting point to the offset position
-            shootingPoint.position = (Vector2)transform.position + (aimDirection * shootingOffset);
-            shootingPoint.rotation = Quaternion.Euler(0, 0, angle);
-        }
-
-        private float SnapToAllowedAngle(float angle)
-        {
-            // Normalize angle to [0, 360)
-            angle = (angle + 360) % 360;
-
-            // Define allowed angles
-            float[] angles = allowDiagonalShooting
-                ? new float[] { 0, 45, 90, 135, 180, 225, 270, 315 } // 8-way if Shift is held
-                : new float[] { 0, 90, 180, 270 }; // 4-way otherwise
-
-            // Find the closest angle
-            float closestAngle = angles[0];
-            float minDifference = Mathf.Abs(angle - closestAngle);
-
-            foreach (float targetAngle in angles)
+            // Flip the player's sprite based on movement direction
+            SpriteRenderer playerSprite = GetComponent<SpriteRenderer>();
+            if (playerSprite != null)
             {
-                float diff = Mathf.Abs(angle - targetAngle);
-                if (diff < minDifference)
-                {
-                    minDifference = diff;
-                    closestAngle = targetAngle;
-                }
+                playerSprite.flipX = aimDirection.x < 0;
             }
-            return closestAngle;
         }
 
         private void ShootBullet()
