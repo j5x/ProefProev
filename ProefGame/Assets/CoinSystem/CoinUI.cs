@@ -1,27 +1,45 @@
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class CoinUI : MonoBehaviour
+// Add this namespace for TextMeshPro
+
+namespace CoinSystem
 {
-    [SerializeField] private Text coinText; // Make sure this is serialized
-
-    private void Start()
+    public class CoinUI : MonoBehaviour
     {
-        // Initialize the UI with the current coin amount
-        coinText.text = "Coins: " + CoinManager.Instance.GetCoins().ToString();
+        private TextMeshProUGUI coinText; // Use TextMeshProUGUI instead of Text
 
-        // Subscribe to the coin update event
-        CoinManager.onCoinsUpdated += UpdateCoinUI;
-    }
+        private void Start()
+        {
+            // Try to get the TextMeshProUGUI component
+            coinText = GetComponent<TextMeshProUGUI>();
 
-    private void OnDestroy()
-    {
-        // Unsubscribe to avoid memory leaks
-        CoinManager.onCoinsUpdated -= UpdateCoinUI;
-    }
+            // If the TextMeshProUGUI component is not found, log an error
+            if (coinText == null)
+            {
+                Debug.LogError("CoinText does not have a TextMeshProUGUI component! Make sure the script is attached to a GameObject with a TextMeshProUGUI component.");
+                return;
+            }
 
-    private void UpdateCoinUI(int newCoinAmount)
-    {
-        coinText.text = "Coins: " + newCoinAmount.ToString();
+            // Initialize the UI with the current coin amount
+            coinText.text = "Coins: " + CoinManager.Instance.GetCoins().ToString();
+
+            // Subscribe to the coin update event
+            CoinManager.onCoinsUpdated += UpdateCoinUI;
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe to avoid memory leaks
+            CoinManager.onCoinsUpdated -= UpdateCoinUI;
+        }
+
+        private void UpdateCoinUI(int newCoinAmount)
+        {
+            if (coinText != null)
+            {
+                coinText.text = "Coins: " + newCoinAmount.ToString();
+            }
+        }
     }
 }
