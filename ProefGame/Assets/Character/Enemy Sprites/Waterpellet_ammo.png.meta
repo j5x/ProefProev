@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Waterpellet_ammo_0: -5890401777313255672
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
