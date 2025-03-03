@@ -8,6 +8,7 @@ public class BackgroundMusicManager : MonoBehaviour
     public bool loopMusic = true; // Whether to loop the music
 
     private AudioSource audioSource;
+    private bool isPaused = false; // Track if the game is paused
 
     private void Awake()
     {
@@ -31,6 +32,19 @@ public class BackgroundMusicManager : MonoBehaviour
 
         // Play the background music
         PlayMusic();
+    }
+
+    private void Update()
+    {
+        // Check if the game is paused and handle music accordingly
+        if (isPaused && audioSource.isPlaying)
+        {
+            audioSource.Pause();
+        }
+        else if (!isPaused && !audioSource.isPlaying)
+        {
+            audioSource.UnPause();
+        }
     }
 
     public void PlayMusic()
@@ -71,5 +85,10 @@ public class BackgroundMusicManager : MonoBehaviour
         {
             audioSource.volume = Mathf.Clamp(volume, 0f, 1f); // Ensure volume is between 0 and 1
         }
+    }
+
+    public void SetPaused(bool paused)
+    {
+        isPaused = paused;
     }
 }
