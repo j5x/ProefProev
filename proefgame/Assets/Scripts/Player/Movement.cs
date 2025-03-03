@@ -9,39 +9,17 @@ using UnityEngine.InputSystem;
 
 namespace Platformer.Mechanics
 {
-    /// <summary>
-    /// This is the main class used to implement control of the player.
-    /// This version includes a dash mechanic and works without animations.
-    /// </summary>
     public class Movement : KinematicObject
     {
         public AudioClip jumpAudio;
         public AudioClip respawnAudio;
         public AudioClip ouchAudio;
-        public AudioClip dashAudio; // Audio clip for dash
+        public AudioClip dashAudio;
 
-        /// <summary>
-        /// Max horizontal speed of the player.
-        /// </summary>
         public float maxSpeed = 7;
-        /// <summary>
-        /// Initial jump velocity at the start of a jump.
-        /// </summary>
         public float jumpTakeOffSpeed = 7;
-
-        /// <summary>
-        /// Dash speed multiplier.
-        /// </summary>
         public float dashSpeed = 14;
-
-        /// <summary>
-        /// Duration of the dash in seconds.
-        /// </summary>
         public float dashDuration = 0.2f;
-
-        /// <summary>
-        /// Cooldown time for the dash in seconds.
-        /// </summary>
         public float dashCooldown = 1f;
 
         public JumpState jumpState = JumpState.Grounded;
@@ -73,7 +51,7 @@ namespace Platformer.Mechanics
 
             m_MoveAction = InputSystem.actions.FindAction("Player/Move");
             m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
-            m_DashAction = InputSystem.actions.FindAction("Player/Dash"); // Dash action
+            m_DashAction = InputSystem.actions.FindAction("Player/Dash");
 
             m_MoveAction.Enable();
             m_JumpAction.Enable();
@@ -148,7 +126,6 @@ namespace Platformer.Mechanics
                 dashEndTime = Time.time + dashDuration;
                 dashCooldownEndTime = Time.time + dashCooldown;
 
-                // Play dash audio if available
                 if (dashAudio != null)
                 {
                     audioSource.PlayOneShot(dashAudio);

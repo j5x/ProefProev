@@ -8,6 +8,8 @@ TagManager:
   - TutorialRequirement
   - Platform
   - Bullet
+  - Enemy
+  - MovingPlatform
   layers:
   - Default
   - TransparentFX

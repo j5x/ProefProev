@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Jack_Popout_05_0: 7345645891304543617
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

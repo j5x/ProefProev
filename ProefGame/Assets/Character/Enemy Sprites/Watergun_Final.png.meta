@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Watergun_Final_0: -7089244358253568412
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
