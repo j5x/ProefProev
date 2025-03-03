@@ -1,22 +1,34 @@
 fileFormatVersion: 2
-guid: df84832409e544f3982b58278a0185a9
+guid: 3878fe86668504eb495dbdc720917c43
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9079979743754005012
-    second: UI copy_0
+      213: -2370542178833576095
+    second: Healtbars 2_0
   - first:
-      213: 8069661952947117302
-    second: UI copy_1
+      213: -3546929886296052696
+    second: Healtbars 2_1
   - first:
-      213: 1092742037385617932
-    second: UI copy_2
+      213: 6742892493664140068
+    second: Healtbars 2_2
   - first:
-      213: 369123066743608411
-    second: UI copy_3
+      213: -3341718627921834957
+    second: Healtbars 2_3
   - first:
-      213: 6507392729108836158
-    second: UI copy_4
+      213: -5196278339062829914
+    second: Healtbars 2_4
+  - first:
+      213: -5047220551748634672
+    second: Healtbars 2_5
+  - first:
+      213: -2414569732018838062
+    second: Healtbars 2_6
+  - first:
+      213: -2161996577409821136
+    second: Healtbars 2_7
+  - first:
+      213: -1865764520308165496
+    second: Healtbars 2_8
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,13 +124,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UI copy_0
+      name: Healtbars 2_0
       rect:
         serializedVersion: 2
-        x: 278
-        y: 598
-        width: 265
-        height: 253
+        x: 23
+        y: 581
+        width: 944
+        height: 381
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -127,20 +139,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ce5dcc5e78e6df180800000000000000
-      internalID: -9079979743754005012
+      spriteID: 16f4b81b2742a1fd0800000000000000
+      internalID: -2370542178833576095
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI copy_1
+      name: Healtbars 2_1
       rect:
         serializedVersion: 2
-        x: 541
-        y: 598
-        width: 527
-        height: 253
+        x: 922
+        y: 810
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,20 +161,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6fcd5e29ac23dff60800000000000000
-      internalID: 8069661952947117302
+      spriteID: 82c6b149f06c6cec0800000000000000
+      internalID: -3546929886296052696
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI copy_2
+      name: Healtbars 2_2
       rect:
         serializedVersion: 2
-        x: 1221
-        y: 598
-        width: 266
-        height: 253
+        x: 1057
+        y: 618
+        width: 821
+        height: 312
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -171,20 +183,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c02a189e7133a2f00800000000000000
-      internalID: 1092742037385617932
+      spriteID: 42bbf736ff0939d50800000000000000
+      internalID: 6742892493664140068
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI copy_3
+      name: Healtbars 2_3
       rect:
         serializedVersion: 2
-        x: 341
-        y: 386
-        width: 135
-        height: 10
+        x: 943
+        y: 697
+        width: 11
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,20 +205,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b54d7a739736f1500800000000000000
-      internalID: 369123066743608411
+      spriteID: 33cc963fc94df91d0800000000000000
+      internalID: -3341718627921834957
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI copy_4
+      name: Healtbars 2_4
       rect:
         serializedVersion: 2
-        x: 602
-        y: 221
-        width: 753
-        height: 197
+        x: 946
+        y: 707
+        width: 6
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -215,8 +227,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e3fed70a537ee4a50800000000000000
-      internalID: 6507392729108836158
+      spriteID: 6ac6a16b16c13e7b0800000000000000
+      internalID: -5196278339062829914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Healtbars 2_5
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 208
+        width: 884
+        height: 353
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d7b8f546aba4f9b0800000000000000
+      internalID: -5047220551748634672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Healtbars 2_6
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 192
+        width: 14
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d56b952f99bd7ed0800000000000000
+      internalID: -2414569732018838062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Healtbars 2_7
+      rect:
+        serializedVersion: 2
+        x: 1023
+        y: 200
+        width: 897
+        height: 373
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03690ed419b0ff1e0800000000000000
+      internalID: -2161996577409821136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Healtbars 2_8
+      rect:
+        serializedVersion: 2
+        x: 1124
+        y: 133
+        width: 82
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8843184dd097b16e0800000000000000
+      internalID: -1865764520308165496
       vertices: []
       indices: 
       edges: []
