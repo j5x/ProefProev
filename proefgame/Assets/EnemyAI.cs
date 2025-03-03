@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public float moveSpeed = 2f; // Speed at which the enemy moves
-    public float moveRange = 5f; // Range within which the enemy moves left and right
+    [SerializeField] private float moveSpeed; // Speed at which the enemy moves
+    [SerializeField] private float moveRange; // Range within which the enemy moves left and right
     public int damage = 1; // Damage dealt to the player on contact
 
     private Vector2 startPosition;
     private bool movingRight = true;
-
+    [SerializeField] private SpriteRenderer enemySprite;
     private Rigidbody2D rb;
 
     void Start()
@@ -31,6 +31,16 @@ public class EnemyAI : MonoBehaviour
         // Move towards the target position
         rb.position = Vector2.MoveTowards(rb.position, targetPosition, moveSpeed * Time.deltaTime);
 
+        // Flip the sprite based on movement direction
+        if (movingRight)
+        {
+            enemySprite.flipX = false; // Facing right
+        }
+        else
+        {
+            enemySprite.flipX = true; // Facing left
+        }
+
         // If the enemy reaches the target position, change direction
         if (Vector2.Distance(rb.position, targetPosition) < 0.1f)
         {
@@ -38,7 +48,6 @@ public class EnemyAI : MonoBehaviour
 
             // Add some randomness to the movement
             moveRange = Random.Range(3f, 7f); // Randomize the range
-            moveSpeed = Random.Range(1f, 3f); // Randomize the speed
         }
     }
 
