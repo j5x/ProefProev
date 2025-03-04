@@ -44,12 +44,6 @@ namespace Platform
             {
                 DisableCollision();
             }
-
-            // Check if the "Jump" key was pressed this frame
-            if (jumpAction != null && jumpAction.WasPressedThisFrame())
-            {
-                DisableCollision();
-            }
         }
 
         private void DisableCollision()
