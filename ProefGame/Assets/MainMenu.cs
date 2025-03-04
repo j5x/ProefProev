@@ -2,48 +2,29 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
-    [Header("Level to Load")]
-    public string levelToLoad; // Name of the level/scene to load
+    [Header("UI References")]
+    public GameObject menuPanel; // Main menu UI panel
 
-    // Reference to the LoadingScreen script
-    private LoadingScreen loadingScreen;
+    [Header("Level to Load")]
+    public string levelToLoad = "Level1"; // Set this in the Inspector
 
     private void Start()
     {
-        // Find the LoadingScreen component in the scene
-        loadingScreen = FindObjectOfType<LoadingScreen>();
-
-        if (loadingScreen == null)
-        {
-            Debug.LogError("LoadingScreen not found in the scene!");
-        }
-
-        // Ensure the loading screen is hidden when the menu is shown
-        if (loadingScreen != null && loadingScreen.loadingScreen != null)
-        {
-            loadingScreen.loadingScreen.SetActive(false);
-        }
+        // Play menu music when the scene starts
+        AudioManager.Instance.PlayMusic("menu");
     }
 
-    // Called when the Play button is clicked
     public void OnPlayButtonClicked()
     {
-        Debug.Log("Play button clicked.");
+        // Hide the main menu UI
+        menuPanel.SetActive(false);
 
-        if (loadingScreen != null && !string.IsNullOrEmpty(levelToLoad))
-        {
-            loadingScreen.LoadGameScene(levelToLoad);
-        }
-        else
-        {
-            Debug.LogError("LoadingScreen reference is null or levelToLoad is not set!");
-        }
+        // Start loading the game scene
+        LoadingScreen.Instance.LoadScene(levelToLoad);
     }
 
-    // Called when the Quit button is clicked
     public void OnQuitButtonClicked()
     {
-        Debug.Log("Quit button clicked.");
         Application.Quit();
     }
 }
