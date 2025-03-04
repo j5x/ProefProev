@@ -15,7 +15,7 @@ public class Movement : MonoBehaviour
     private float dashEndTime; // Time when the dash ends
     private float dashCooldownEndTime; // Time when the dash cooldown ends
 
-    private MovingPlatform currentPlatform; // Reference to the platform the player is standing on
+    private Transform currentPlatform; // Reference to the platform the player is standing on
 
     private InputAction m_MoveAction;
     private InputAction m_JumpAction;
@@ -54,14 +54,6 @@ public class Movement : MonoBehaviour
 
         // Apply movement
         Vector2 targetVelocity = new Vector2(moveInput * maxSpeed, rb.linearVelocity.y);
-
-        // Apply platform velocity if on a platform
-        if (currentPlatform != null)
-        {
-            targetVelocity += currentPlatform.PlatformVelocity / Time.deltaTime; // Ensure velocity is in units per second
-            Debug.Log("Platform Velocity: " + currentPlatform.PlatformVelocity);
-        }
-
         rb.linearVelocity = targetVelocity;
     }
 
@@ -83,29 +75,29 @@ public class Movement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if the player is standing on a moving platform or ground
+        // Check if the player is standing on a platform
         if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
         {
             isGrounded = true;
-            if (collision.gameObject.CompareTag("Platform"))
-            {
-                currentPlatform = collision.gameObject.GetComponent<MovingPlatform>();
-                Debug.Log("Landed on platform: " + currentPlatform.name);
-            }
+
+            // Parent the player to the platform
+            currentPlatform = collision.transform;
+            transform.SetParent(currentPlatform);
+            Debug.Log("Landed on platform: " + currentPlatform.name);
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        // Check if the player leaves the moving platform or ground
+        // Check if the player leaves the platform
         if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
         {
             isGrounded = false;
-            if (collision.gameObject.CompareTag("Platform"))
-            {
-                currentPlatform = null;
-                Debug.Log("Left platform");
-            }
+
+            // Unparent the player from the platform
+            transform.SetParent(null);
+            currentPlatform = null;
+            Debug.Log("Left platform");
         }
     }
 }
