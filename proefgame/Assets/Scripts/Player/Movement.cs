@@ -30,6 +30,11 @@ public class Movement : MonoBehaviour
         m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
         m_DashAction = InputSystem.actions.FindAction("Player/Dash");
 
+        if (m_MoveAction == null || m_JumpAction == null || m_DashAction == null)
+        {
+            Debug.LogError("One or more input actions are not found. Please check your Input Action Asset.");
+        }
+
         m_MoveAction.Enable();
         m_JumpAction.Enable();
         m_DashAction.Enable();
@@ -38,7 +43,7 @@ public class Movement : MonoBehaviour
     private void Update()
     {
         // Handle movement input
-        float moveInput = m_MoveAction.ReadValue<Vector2>().x;
+        Vector2 moveInput = m_MoveAction.ReadValue<Vector2>();
 
         // Handle jump input
         if (isGrounded && m_JumpAction.WasPressedThisFrame())
@@ -49,12 +54,16 @@ public class Movement : MonoBehaviour
         // Handle dash input
         if (m_DashAction.WasPressedThisFrame() && Time.time >= dashCooldownEndTime)
         {
-            StartDash();
+            Debug.Log("Dash input detected");
+            StartDash(moveInput);
         }
 
         // Apply movement
-        Vector2 targetVelocity = new Vector2(moveInput * maxSpeed, rb.linearVelocity.y);
-        rb.linearVelocity = targetVelocity;
+        if (!isDashing) // Only apply movement if not dashing
+        {
+            Vector2 targetVelocity = new Vector2(moveInput.x * maxSpeed, rb.linearVelocity.y);
+            rb.linearVelocity = targetVelocity;
+        }
     }
 
     private void Jump()
@@ -63,14 +72,36 @@ public class Movement : MonoBehaviour
         isGrounded = false; // Player is no longer grounded after jumping
     }
 
-    private void StartDash()
+    private void StartDash(Vector2 direction)
     {
         isDashing = true;
         dashEndTime = Time.time + dashDuration;
         dashCooldownEndTime = Time.time + dashCooldown;
 
-        // Apply dash velocity
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0) + (Vector2)transform.right * dashSpeed;
+        // Normalize the direction to ensure consistent dash speed
+        if (direction.magnitude > 0)
+        {
+            direction.Normalize();
+        }
+        else
+        {
+            // Default to right if no direction is pressed
+            direction = Vector2.right;
+        }
+
+        // Apply dash velocity in the specified direction
+        rb.linearVelocity = direction * dashSpeed;
+        Debug.Log("Dashing in direction: " + direction + " with velocity: " + rb.linearVelocity);
+
+        // End the dash after the dash duration
+        Invoke(nameof(EndDash), dashDuration);
+    }
+
+    private void EndDash()
+    {
+        isDashing = false;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); // Reset vertical velocity after dash
+        Debug.Log("Dash ended");
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
