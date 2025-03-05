@@ -20,15 +20,15 @@ public class PlayerCollisionHandler : MonoBehaviour
         // Check the tag of the object the player collided with
         if (other.CompareTag("Spawn"))
         {
-            dialogManager.StartDialog(dialogManager.spawnDialog);
+            dialogManager.StartDialog(dialogManager.spawnDialog, dialogManager.spawnIcon);
         }
-        if (other.CompareTag("Tutorial"))
+        else if (other.CompareTag("BossRoom"))
         {
-            dialogManager.StartDialog(dialogManager.tuturialDialog);
+            dialogManager.StartDialog(dialogManager.bossRoomDialog, dialogManager.bossRoomIcon);
         }
-        if (other.CompareTag("BossRoom"))
+        else if (other.CompareTag("Tutorial"))
         {
-            dialogManager.StartDialog(dialogManager.bossRoomDialog);
+            dialogManager.StartDialog(dialogManager.tutorialDialog, dialogManager.tutorialIcon);
         }
         // Add more conditions for other tags as needed
     }
