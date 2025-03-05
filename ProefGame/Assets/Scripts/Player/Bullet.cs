@@ -1,11 +1,11 @@
+using Enemy;
 using UnityEngine;
-using Platformer.Mechanics;
 
 namespace Player
 {
     public class Bullet : MonoBehaviour
     {
-        public float speed;
+        public float speed = 10f;
         public int damage = 1;
         private Rigidbody2D rb;
 
@@ -14,22 +14,20 @@ namespace Player
             rb = GetComponent<Rigidbody2D>();
             rb.linearVelocity = transform.right * speed;
         }
-        
-        void Awake()
-        {
-            Destroy(gameObject, 3f); // Bullet disappears after 3 seconds
-        }
 
-        
         void OnTriggerEnter2D(Collider2D collision)
         {
-            // Check if the bullet hit an enemy with a Health component
-            Health enemyHealth = collision.GetComponent<Health>();
+            if (!collision.CompareTag("Enemy")) return;
+
+            Debug.Log($"{gameObject.name} hit {collision.gameObject.name}");
+
+            var enemyHealth = collision.GetComponent<HealthSystem>();
             if (enemyHealth != null)
             {
-                enemyHealth.Decrement(); // Reduce enemy health
-                Destroy(gameObject); // Destroy the bullet
+                enemyHealth.TakeDamage(damage);
             }
+
+            Destroy(gameObject); // Destroy bullet instantly on impact
         }
     }
 }

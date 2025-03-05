@@ -1,33 +1,28 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Player
 {
     public class Shoot : MonoBehaviour
     {
-        public Transform shootingPoint;
-        public GameObject bulletPrefab;
-        public GameObject aimMarkerPrefab;
+        public Transform gun; // Assign Gun object in Inspector
+        public GameObject shootingPointPrefab; // Assign ShootingPoint prefab
+        private Transform shootingPoint; // The actual shooting point instance
+        public GameObject bulletPrefab; // Assign Bullet prefab in the Inspector
         public float bulletSpeed = 10f;
-        public float shootingOffset = 1.25f; // Distance from player
 
-        private GameObject aimMarker;
-        private Vector2 aimDirection;
-
-        private void Start()
+        void Start()
         {
-            // Instantiate the aiming marker
-            if (aimMarkerPrefab != null)
+            if (shootingPointPrefab != null)
             {
-                aimMarker = Instantiate(aimMarkerPrefab);
+                shootingPoint = Instantiate(shootingPointPrefab, gun.position, gun.rotation).transform;
+                shootingPoint.SetParent(gun);
             }
         }
 
-        private void Update()
+        void Update()
         {
             HandleAiming();
-
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            if (Input.GetMouseButtonDown(0)) // Left Mouse Button
             {
                 ShootBullet();
             }
@@ -35,51 +30,30 @@ namespace Player
 
         private void HandleAiming()
         {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Vector2 worldMousePos = Camera.main.ScreenToWorldPoint(mousePos);
-            Vector2 playerPos = transform.position;
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 aimDirection = (mousePos - (Vector2)gun.position).normalized;
 
-            // Calculate aim direction
-            aimDirection = (worldMousePos - playerPos).normalized;
+            float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+            gun.rotation = Quaternion.Euler(0, 0, angle);
 
-            // Move the shooting point
-            shootingPoint.position = playerPos + (aimDirection * shootingOffset);
-            shootingPoint.right = aimDirection; // Rotate shooting point to face aim direction
+            bool shouldFlip = angle > 90 || angle < -90;
+            gun.GetComponent<SpriteRenderer>().flipY = shouldFlip;
 
-            // Move and rotate the aim marker
-            if (aimMarker != null)
+            if (shootingPoint != null)
             {
-                aimMarker.transform.position = shootingPoint.position;
-                aimMarker.transform.rotation = shootingPoint.rotation;
-            }
-
-            // Flip the player's sprite based on movement direction
-            SpriteRenderer playerSprite = GetComponent<SpriteRenderer>();
-            if (playerSprite != null)
-            {
-                playerSprite.flipX = aimDirection.x < 0;
+                shootingPoint.rotation = gun.rotation;
             }
         }
 
         private void ShootBullet()
         {
+            if (bulletPrefab == null || shootingPoint == null) return;
+
             GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, shootingPoint.rotation);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
             if (rb != null)
             {
-                rb.linearVelocity = aimDirection * bulletSpeed;
-            }
-        }
-
-        // Draw debug arrow in the Scene view
-        private void OnDrawGizmos()
-        {
-            if (shootingPoint != null)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(transform.position, shootingPoint.position);
-                Gizmos.DrawSphere(shootingPoint.position, 0.1f);
+                rb.linearVelocity = shootingPoint.right * bulletSpeed;
             }
         }
     }
