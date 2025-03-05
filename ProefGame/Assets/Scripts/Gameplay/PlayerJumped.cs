@@ -16,8 +16,6 @@ namespace Platformer.Gameplay
         {
             if (player.audioSource && player.jumpAudio)
                 player.audioSource.PlayOneShot(player.jumpAudio);
-            if (movement.audioSource && movement.jumpAudio)
-                movement.audioSource.PlayOneShot(movement.jumpAudio);
         }
         
     }

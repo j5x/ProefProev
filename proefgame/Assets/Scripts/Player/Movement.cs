@@ -1,203 +1,134 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Platformer.Gameplay;
-using static Platformer.Core.Simulation;
-using Platformer.Model;
-using Platformer.Core;
 using UnityEngine.InputSystem;
 
-namespace Platformer.Mechanics
+public class Movement : MonoBehaviour
 {
-    /// <summary>
-    /// This is the main class used to implement control of the player.
-    /// This version includes a dash mechanic and works without animations.
-    /// </summary>
-    public class Movement : KinematicObject
+    public float maxSpeed = 7; // Maximum movement speed
+    public float jumpTakeOffSpeed = 7; // Jump force
+    public float dashSpeed = 14; // Dash speed
+    public float dashDuration = 0.2f; // Duration of the dash
+    public float dashCooldown = 1f; // Cooldown between dashes
+
+    private Rigidbody2D rb; // Player's Rigidbody2D
+    private bool isGrounded; // Whether the player is on the ground
+    private bool isDashing; // Whether the player is dashing
+    private float dashEndTime; // Time when the dash ends
+    private float dashCooldownEndTime; // Time when the dash cooldown ends
+
+    private Transform currentPlatform; // Reference to the platform the player is standing on
+
+    private InputAction m_MoveAction;
+    private InputAction m_JumpAction;
+    private InputAction m_DashAction;
+
+    private void Awake()
     {
-        public AudioClip jumpAudio;
-        public AudioClip respawnAudio;
-        public AudioClip ouchAudio;
-        public AudioClip dashAudio; // Audio clip for dash
+        rb = GetComponent<Rigidbody2D>();
 
-        /// <summary>
-        /// Max horizontal speed of the player.
-        /// </summary>
-        public float maxSpeed = 7;
-        /// <summary>
-        /// Initial jump velocity at the start of a jump.
-        /// </summary>
-        public float jumpTakeOffSpeed = 7;
+        // Set up input actions (using your previous setup)
+        m_MoveAction = InputSystem.actions.FindAction("Player/Move");
+        m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
+        m_DashAction = InputSystem.actions.FindAction("Player/Dash");
 
-        /// <summary>
-        /// Dash speed multiplier.
-        /// </summary>
-        public float dashSpeed = 14;
-
-        /// <summary>
-        /// Duration of the dash in seconds.
-        /// </summary>
-        public float dashDuration = 0.2f;
-
-        /// <summary>
-        /// Cooldown time for the dash in seconds.
-        /// </summary>
-        public float dashCooldown = 1f;
-
-        public JumpState jumpState = JumpState.Grounded;
-        private bool stopJump;
-        public Collider2D collider2d;
-        public AudioSource audioSource;
-        public Health health;
-        public bool controlEnabled = true;
-
-        bool jump;
-        Vector2 move;
-        bool isDashing;
-        float dashEndTime;
-        float dashCooldownEndTime;
-
-        readonly PlatformerModel model = Simulation.GetModel<PlatformerModel>();
-
-        private InputAction m_MoveAction;
-        private InputAction m_JumpAction;
-        private InputAction m_DashAction;
-
-        public Bounds Bounds => collider2d.bounds;
-
-        void Awake()
+        if (m_MoveAction == null || m_JumpAction == null || m_DashAction == null)
         {
-            health = GetComponent<Health>();
-            audioSource = GetComponent<AudioSource>();
-            collider2d = GetComponent<Collider2D>();
-
-            m_MoveAction = InputSystem.actions.FindAction("Player/Move");
-            m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
-            m_DashAction = InputSystem.actions.FindAction("Player/Dash"); // Dash action
-
-            m_MoveAction.Enable();
-            m_JumpAction.Enable();
-            m_DashAction.Enable();
+            Debug.LogError("One or more input actions are not found. Please check your Input Action Asset.");
         }
 
-        protected override void Update()
+        m_MoveAction.Enable();
+        m_JumpAction.Enable();
+        m_DashAction.Enable();
+    }
+
+    private void Update()
+    {
+        // Handle movement input
+        Vector2 moveInput = m_MoveAction.ReadValue<Vector2>();
+
+        // Handle jump input
+        if (isGrounded && m_JumpAction.WasPressedThisFrame())
         {
-            if (controlEnabled)
-            {
-                move.x = m_MoveAction.ReadValue<Vector2>().x;
-
-                if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
-                    jumpState = JumpState.PrepareToJump;
-                else if (m_JumpAction.WasReleasedThisFrame())
-                {
-                    stopJump = true;
-                    Schedule<PlayerStopJump>().movement = this;
-                }
-
-                // Check for dash input
-                if (m_DashAction.WasPressedThisFrame() && Time.time >= dashCooldownEndTime)
-                {
-                    StartDash();
-                }
-            }
-            else
-            {
-                move.x = 0;
-            }
-
-            UpdateJumpState();
-            UpdateDashState();
-            base.Update();
+            Jump();
         }
 
-        void UpdateJumpState()
+        // Handle dash input
+        if (m_DashAction.WasPressedThisFrame() && Time.time >= dashCooldownEndTime)
         {
-            jump = false;
-            switch (jumpState)
-            {
-                case JumpState.PrepareToJump:
-                    jumpState = JumpState.Jumping;
-                    jump = true;
-                    stopJump = false;
-                    break;
-                case JumpState.Jumping:
-                    if (!IsGrounded)
-                    {
-                        Schedule<PlayerJumped>().movement = this;
-                        jumpState = JumpState.InFlight;
-                    }
-                    break;
-                case JumpState.InFlight:
-                    if (IsGrounded)
-                    {
-                        Schedule<PlayerLanded>().movement = this;
-                        jumpState = JumpState.Landed;
-                    }
-                    break;
-                case JumpState.Landed:
-                    jumpState = JumpState.Grounded;
-                    break;
-            }
+            Debug.Log("Dash input detected");
+            StartDash(moveInput);
         }
 
-        void StartDash()
+        // Apply movement
+        if (!isDashing) // Only apply movement if not dashing
         {
-            if (!isDashing)
-            {
-                isDashing = true;
-                dashEndTime = Time.time + dashDuration;
-                dashCooldownEndTime = Time.time + dashCooldown;
+            Vector2 targetVelocity = new Vector2(moveInput.x * maxSpeed, rb.linearVelocity.y);
+            rb.linearVelocity = targetVelocity;
+        }
+    }
 
-                // Play dash audio if available
-                if (dashAudio != null)
-                {
-                    audioSource.PlayOneShot(dashAudio);
-                }
-            }
+    private void Jump()
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpTakeOffSpeed);
+        isGrounded = false; // Player is no longer grounded after jumping
+    }
+
+    private void StartDash(Vector2 direction)
+    {
+        isDashing = true;
+        dashEndTime = Time.time + dashDuration;
+        dashCooldownEndTime = Time.time + dashCooldown;
+
+        // Normalize the direction to ensure consistent dash speed
+        if (direction.magnitude > 0)
+        {
+            direction.Normalize();
+        }
+        else
+        {
+            // Default to right if no direction is pressed
+            direction = Vector2.right;
         }
 
-        void UpdateDashState()
+        // Apply dash velocity in the specified direction
+        rb.linearVelocity = direction * dashSpeed;
+        Debug.Log("Dashing in direction: " + direction + " with velocity: " + rb.linearVelocity);
+
+        // End the dash after the dash duration
+        Invoke(nameof(EndDash), dashDuration);
+    }
+
+    private void EndDash()
+    {
+        isDashing = false;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); // Reset vertical velocity after dash
+        Debug.Log("Dash ended");
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Check if the player is standing on a platform
+        if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
         {
-            if (isDashing && Time.time >= dashEndTime)
-            {
-                isDashing = false;
-            }
+            isGrounded = true;
+
+            // Parent the player to the platform
+            currentPlatform = collision.transform;
+            transform.SetParent(currentPlatform);
+            Debug.Log("Landed on platform: " + currentPlatform.name);
         }
+    }
 
-        protected override void ComputeVelocity()
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        // Check if the player leaves the platform
+        if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
         {
-            if (jump && IsGrounded)
-            {
-                velocity.y = jumpTakeOffSpeed * model.jumpModifier;
-                jump = false;
-            }
-            else if (stopJump)
-            {
-                stopJump = false;
-                if (velocity.y > 0)
-                {
-                    velocity.y = velocity.y * model.jumpDeceleration;
-                }
-            }
+            isGrounded = false;
 
-            // Apply dash velocity if dashing
-            if (isDashing)
-            {
-                targetVelocity = new Vector2(move.x * dashSpeed, velocity.y);
-            }
-            else
-            {
-                targetVelocity = move * maxSpeed;
-            }
-        }
-
-        public enum JumpState
-        {
-            Grounded,
-            PrepareToJump,
-            Jumping,
-            InFlight,
-            Landed
+            // Unparent the player from the platform
+            transform.SetParent(null);
+            currentPlatform = null;
+            Debug.Log("Left platform");
         }
     }
 }
