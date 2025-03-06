@@ -1,134 +1,143 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour
+namespace Player
 {
-    public float maxSpeed = 7; // Maximum movement speed
-    public float jumpTakeOffSpeed = 7; // Jump force
-    public float dashSpeed = 14; // Dash speed
-    public float dashDuration = 0.2f; // Duration of the dash
-    public float dashCooldown = 1f; // Cooldown between dashes
-
-    private Rigidbody2D rb; // Player's Rigidbody2D
-    private bool isGrounded; // Whether the player is on the ground
-    private bool isDashing; // Whether the player is dashing
-    private float dashEndTime; // Time when the dash ends
-    private float dashCooldownEndTime; // Time when the dash cooldown ends
-
-    private Transform currentPlatform; // Reference to the platform the player is standing on
-
-    private InputAction m_MoveAction;
-    private InputAction m_JumpAction;
-    private InputAction m_DashAction;
-
-    private void Awake()
+    public class Movement : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody2D>();
+        public float maxSpeed = 7f; // Maximum movement speed
+        public float jumpTakeOffSpeed = 7f; // Jump force
+        public float dashSpeed = 14f; // Dash speed
+        public float dashDuration = 0.2f; // Duration of the dash
+        public float dashCooldown = 1f; // Cooldown between dashes
 
-        // Set up input actions (using your previous setup)
-        m_MoveAction = InputSystem.actions.FindAction("Player/Move");
-        m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
-        m_DashAction = InputSystem.actions.FindAction("Player/Dash");
+        private Rigidbody2D rb; // Player's Rigidbody2D
+        private bool isGrounded; // Whether the player is on the ground
+        private bool isDashing; // Whether the player is dashing
+        private float dashEndTime; // Time when the dash ends
+        private float dashCooldownEndTime; // Time when the dash cooldown ends
 
-        if (m_MoveAction == null || m_JumpAction == null || m_DashAction == null)
+        private Transform currentPlatform; // Reference to the platform the player is standing on
+
+        private InputAction m_MoveAction;
+        private InputAction m_JumpAction;
+        private InputAction m_DashAction;
+
+        private void Awake()
         {
-            Debug.LogError("One or more input actions are not found. Please check your Input Action Asset.");
+            rb = GetComponent<Rigidbody2D>();
         }
 
-        m_MoveAction.Enable();
-        m_JumpAction.Enable();
-        m_DashAction.Enable();
-    }
-
-    private void Update()
-    {
-        // Handle movement input
-        Vector2 moveInput = m_MoveAction.ReadValue<Vector2>();
-
-        // Handle jump input
-        if (isGrounded && m_JumpAction.WasPressedThisFrame())
+        private void OnEnable()
         {
-            Jump();
+            // Set up input actions
+            m_MoveAction = new InputAction("Move", binding: "<Gamepad>/leftStick");
+            m_JumpAction = new InputAction("Jump", binding: "<Keyboard>/space");
+            m_DashAction = new InputAction("Dash", binding: "<Keyboard>/shift");
+
+            m_MoveAction.Enable();
+            m_JumpAction.Enable();
+            m_DashAction.Enable();
         }
 
-        // Handle dash input
-        if (m_DashAction.WasPressedThisFrame() && Time.time >= dashCooldownEndTime)
+        private void OnDisable()
         {
-            Debug.Log("Dash input detected");
-            StartDash(moveInput);
+            // Disable input actions when they're no longer needed
+            m_MoveAction.Disable();
+            m_JumpAction.Disable();
+            m_DashAction.Disable();
         }
 
-        // Apply movement
-        if (!isDashing) // Only apply movement if not dashing
+        private void Update()
         {
-            Vector2 targetVelocity = new Vector2(moveInput.x * maxSpeed, rb.linearVelocity.y);
-            rb.linearVelocity = targetVelocity;
-        }
-    }
+            // Handle movement input
+            Vector2 moveInput = m_MoveAction.ReadValue<Vector2>();
 
-    private void Jump()
-    {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpTakeOffSpeed);
-        isGrounded = false; // Player is no longer grounded after jumping
-    }
+            // Handle jump input
+            if (isGrounded && m_JumpAction.WasPressedThisFrame())
+            {
+                Jump();
+            }
 
-    private void StartDash(Vector2 direction)
-    {
-        isDashing = true;
-        dashEndTime = Time.time + dashDuration;
-        dashCooldownEndTime = Time.time + dashCooldown;
+            // Handle dash input
+            if (m_DashAction.WasPressedThisFrame() && Time.time >= dashCooldownEndTime)
+            {
+                Debug.Log("Dash input detected");
+                StartDash(moveInput);
+            }
 
-        // Normalize the direction to ensure consistent dash speed
-        if (direction.magnitude > 0)
-        {
-            direction.Normalize();
-        }
-        else
-        {
-            // Default to right if no direction is pressed
-            direction = Vector2.right;
+            // Apply movement
+            if (!isDashing) // Only apply movement if not dashing
+            {
+                Vector2 targetVelocity = new Vector2(moveInput.x * maxSpeed, rb.linearVelocity.y);
+                rb.linearVelocity = targetVelocity;
+            }
         }
 
-        // Apply dash velocity in the specified direction
-        rb.linearVelocity = direction * dashSpeed;
-        Debug.Log("Dashing in direction: " + direction + " with velocity: " + rb.linearVelocity);
-
-        // End the dash after the dash duration
-        Invoke(nameof(EndDash), dashDuration);
-    }
-
-    private void EndDash()
-    {
-        isDashing = false;
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); // Reset vertical velocity after dash
-        Debug.Log("Dash ended");
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Check if the player is standing on a platform
-        if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
+        private void Jump()
         {
-            isGrounded = true;
-
-            // Parent the player to the platform
-            currentPlatform = collision.transform;
-            transform.SetParent(currentPlatform);
-            Debug.Log("Landed on platform: " + currentPlatform.name);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpTakeOffSpeed);
+            isGrounded = false; // Player is no longer grounded after jumping
         }
-    }
 
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        // Check if the player leaves the platform
-        if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
+        private void StartDash(Vector2 direction)
         {
-            isGrounded = false;
+            isDashing = true;
+            dashEndTime = Time.time + dashDuration;
+            dashCooldownEndTime = Time.time + dashCooldown;
 
-            // Unparent the player from the platform
-            transform.SetParent(null);
-            currentPlatform = null;
-            Debug.Log("Left platform");
+            // Normalize the direction to ensure consistent dash speed
+            if (direction.magnitude > 0)
+            {
+                direction.Normalize();
+            }
+            else
+            {
+                // Default to right if no direction is pressed
+                direction = Vector2.right;
+            }
+
+            // Apply dash velocity in the specified direction
+            rb.linearVelocity = direction * dashSpeed;
+            Debug.Log("Dashing in direction: " + direction + " with velocity: " + rb.linearVelocity);
+
+            // End the dash after the dash duration
+            Invoke(nameof(EndDash), dashDuration);
+        }
+
+        private void EndDash()
+        {
+            isDashing = false;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); // Reset vertical velocity after dash
+            Debug.Log("Dash ended");
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            // Check if the player is standing on a platform
+            if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
+            {
+                isGrounded = true;
+
+                // Parent the player to the platform
+                currentPlatform = collision.transform;
+                transform.SetParent(currentPlatform);
+                Debug.Log("Landed on platform: " + currentPlatform.name);
+            }
+        }
+
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            // Check if the player leaves the platform
+            if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
+            {
+                isGrounded = false;
+
+                // Unparent the player from the platform
+                transform.SetParent(null);
+                currentPlatform = null;
+                Debug.Log("Left platform");
+            }
         }
     }
 }
