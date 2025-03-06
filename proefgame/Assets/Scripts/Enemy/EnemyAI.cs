@@ -1,6 +1,5 @@
-using Platformer.Mechanics;
 using UnityEngine;
-
+using Health;
 public class EnemyAI : MonoBehaviour
 {
     [SerializeField] private float moveSpeed; // Speed at which the enemy moves
@@ -143,15 +142,15 @@ public class EnemyAI : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("Player hit!");
-            Health playerHealth = collision.gameObject.GetComponent<Health>();
+            HealthSystem playerHealth = collision.gameObject.GetComponent<HealthSystem>();
             if (playerHealth != null)
             {
                 Debug.Log("Player health found. Dealing damage.");
-                playerHealth.Decrement();
+                playerHealth.TakeDamage(damage);
             }
             else
             {
-                Debug.LogError("Player Health component not found!");
+                Debug.LogError("Player HealthSystem component not found!");
             }
         }
     }

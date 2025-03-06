@@ -1,7 +1,7 @@
 using System.Collections;
-using Platformer.Mechanics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Health;
 
 public class AuraShield : MonoBehaviour
 {
@@ -14,17 +14,28 @@ public class AuraShield : MonoBehaviour
     private float cooldownEndTime; // Time when the cooldown ends
 
     private InputAction m_AuraShieldAction; // Input action for the shield
-    private Health playerHealth; // Reference to the player's Health component
+    private HealthSystem playerHealth; // Reference to the player's HealthSystem component
     private GameObject shieldInstance; // Reference to the instantiated shield
 
     void Awake()
     {
-        // Get the Health component from the player
-        playerHealth = GetComponent<Health>();
+        // Get the HealthSystem component from the player
+        playerHealth = GetComponent<HealthSystem>();
+        if (playerHealth == null)
+        {
+            Debug.LogError("HealthSystem component not found on the player!");
+        }
 
         // Find and enable the AuraShield input action
         m_AuraShieldAction = InputSystem.actions.FindAction("Player/Aurashield");
-        m_AuraShieldAction.Enable();
+        if (m_AuraShieldAction != null)
+        {
+            m_AuraShieldAction.Enable();
+        }
+        else
+        {
+            Debug.LogError("AuraShield input action not found!");
+        }
     }
 
     void Update()
