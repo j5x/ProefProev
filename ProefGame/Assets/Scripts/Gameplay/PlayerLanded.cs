@@ -1,5 +1,6 @@
 using Platformer.Core;
 using Platformer.Mechanics;
+using Player;
 
 namespace Platformer.Gameplay
 {
