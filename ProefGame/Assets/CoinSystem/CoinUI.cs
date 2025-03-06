@@ -7,7 +7,7 @@ namespace CoinSystem
 {
     public class CoinUI : MonoBehaviour
     {
-        private TextMeshProUGUI coinText; // Use TextMeshProUGUI instead of Text
+        public TextMeshProUGUI coinText; // Use TextMeshProUGUI instead of Text
 
         private void Start()
         {

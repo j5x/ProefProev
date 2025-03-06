@@ -115,7 +115,7 @@
                 },
                 {
                     "name": "Pause",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "b7a0d324-919b-470d-8c9b-48721baa2128",
                     "expectedControlType": "",
                     "processors": "",

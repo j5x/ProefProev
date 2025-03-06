@@ -1,7 +1,6 @@
+using Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-// Add this namespace for Unity Input System
 
 namespace PauseSystem
 {
@@ -9,89 +8,93 @@ namespace PauseSystem
     {
         public static PauseSystem Instance;
 
-        public GameObject pauseMenu; // Reference to the Pause Menu UI
-
+        public GameObject pauseMenu;
         private bool isPaused = false;
-        private InputAction m_Pausemenu; // Input action for pause
+
+        [SerializeField] private InputActionReference pauseActionReference;
+        public Shoot playerShooting; // Reference to PlayerShooting script
 
         private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject); // Persist across scenes
+                DontDestroyOnLoad(gameObject);
             }
             else
             {
-                Destroy(gameObject); // Destroy duplicate instances
+                Destroy(gameObject);
+                return;
             }
 
-            // Find and enable the Pause action
-            m_Pausemenu = InputSystem.actions.FindAction("Player/Pause");
-            m_Pausemenu.Enable();
-            m_Pausemenu.performed += OnPausePerformed; // Subscribe to the Pause action
+            // Ensure the pause action reference is set
+            if (pauseActionReference != null)
+            {
+                pauseActionReference.action.Enable();
+                pauseActionReference.action.performed += OnPausePerformed;
+            }
+            else
+            {
+                Debug.LogError("Pause action reference is not set! Please assign it in the inspector.");
+            }
+
+            // Find the PlayerShooting script (Ensure your player is tagged as "Player")
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                playerShooting = player.GetComponent<Shoot>();
+            }
         }
 
         private void OnDestroy()
         {
-            // Clean up the Input System action
-            if (m_Pausemenu != null)
+            if (pauseActionReference != null)
             {
-                m_Pausemenu.performed -= OnPausePerformed; // Unsubscribe from the Pause action
-                m_Pausemenu.Disable();
+                pauseActionReference.action.performed -= OnPausePerformed;
+                pauseActionReference.action.Disable();
             }
         }
 
         private void OnPausePerformed(InputAction.CallbackContext context)
         {
-            // Toggle pause when the Pause action is performed
             TogglePause();
         }
 
         public void TogglePause()
         {
             isPaused = !isPaused;
-
-            if (isPaused)
-            {
-                PauseGame();
-            }
-            else
-            {
-                ResumeGame();
-            }
+            if (isPaused) PauseGame();
+            else ResumeGame();
         }
 
         private void PauseGame()
         {
-            Time.timeScale = 0f; // Stop time
-            BackgroundMusicManager.Instance.SetPaused(true); // Pause the music
-            if (pauseMenu != null)
-            {
-                pauseMenu.SetActive(true); // Show the pause menu
-            }
+            Time.timeScale = 0f;
+            BackgroundMusicManager.Instance?.SetPaused(true);
+            if (pauseMenu) pauseMenu.SetActive(true);
+
+            // Disable Player Shooting
+            if (playerShooting != null)
+                playerShooting.enabled = false;
+
             Debug.Log("Game Paused");
         }
 
         private void ResumeGame()
         {
-            Time.timeScale = 1f; // Resume time
-            BackgroundMusicManager.Instance.SetPaused(false); // Resume the music
-            if (pauseMenu != null)
-            {
-                pauseMenu.SetActive(false); // Hide the pause menu
-            }
+            Time.timeScale = 1f;
+            BackgroundMusicManager.Instance?.SetPaused(false);
+            if (pauseMenu) pauseMenu.SetActive(false);
+
+            // Enable Player Shooting
+            if (playerShooting != null)
+                playerShooting.enabled = true;
+
             Debug.Log("Game Resumed");
         }
 
-        public void OnResumeButtonClicked()
-        {
-            ResumeGame();
-        }
+        public void OnResumeButtonClicked() => ResumeGame();
 
-        public void OnQuitButtonClicked()
-        {
-            Application.Quit(); // Quit the game
-        }
+        public void OnQuitButtonClicked() => Application.Quit();
     }
 }
