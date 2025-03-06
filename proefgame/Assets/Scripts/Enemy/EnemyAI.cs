@@ -9,18 +9,102 @@ public class EnemyAI : MonoBehaviour
 
     private Vector2 startPosition;
     private bool movingRight = true;
-    [SerializeField] private SpriteRenderer enemySprite;
+    private SpriteRenderer enemySprite;
     private Rigidbody2D rb;
+    private Animator anim; // Animator component
+
+    [SerializeField] private float shootingRange = 5f; // Range within which the enemy can shoot
+    private Transform player; // Reference to the player's transform
+    private bool isPlayerInRange = false; // Whether the player is in shooting range
+
+    [SerializeField] private float idleDuration = 2f; // Time to idle after player leaves range
+    private float idleTimer = 0f; // Timer for idling
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         startPosition = rb.position;
+
+        // Get the Animator component attached to the same GameObject
+        anim = GetComponent<Animator>();
+        if (anim == null)
+        {
+            Debug.LogError("Animator component not found on the enemy GameObject!");
+        }
+
+        // Get the SpriteRenderer component
+        enemySprite = GetComponent<SpriteRenderer>();
+        if (enemySprite == null)
+        {
+            Debug.LogError("SpriteRenderer component not found on the enemy GameObject!");
+        }
+
+        // Find the player GameObject
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        if (player == null)
+        {
+            Debug.LogError("Player not found! Ensure the player GameObject is tagged with 'Player'.");
+        }
+
+        // Start moving by default
+        anim.SetBool("isMoving", true);
     }
 
     void Update()
     {
-        MoveEnemy();
+        // Check if the player is in range (only if player is not null)
+        if (player != null)
+        {
+            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+            isPlayerInRange = distanceToPlayer <= shootingRange;
+
+            // Update the inRange parameter in the Animator
+            anim.SetBool("inRange", isPlayerInRange);
+
+            if (isPlayerInRange)
+            {
+                // Player is in range: stop moving and shoot
+                StopMoving();
+                anim.SetTrigger("Shoot"); // Trigger shooting animation
+            }
+            else
+            {
+                // Player is out of range: handle idle and moving behavior
+                HandleIdleAndMoving();
+            }
+        }
+    }
+
+    void StopMoving()
+    {
+        // Stop moving and face the player
+        anim.SetBool("isMoving", false);
+
+        // Face the player
+        if (player.position.x > transform.position.x)
+        {
+            enemySprite.flipX = false; // Face right
+        }
+        else
+        {
+            enemySprite.flipX = true; // Face left
+        }
+    }
+
+    void HandleIdleAndMoving()
+    {
+        if (idleTimer > 0f)
+        {
+            // Idle for a set duration
+            idleTimer -= Time.deltaTime;
+            anim.SetBool("isMoving", false); // Ensure the enemy is idle
+        }
+        else
+        {
+            // Resume moving after idle duration
+            anim.SetBool("isMoving", true);
+            MoveEnemy();
+        }
     }
 
     void MoveEnemy()
@@ -69,6 +153,16 @@ public class EnemyAI : MonoBehaviour
             {
                 Debug.LogError("Player Health component not found!");
             }
+        }
+    }
+
+    // Called when the player leaves the range
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            // Start idling for the set duration
+            idleTimer = idleDuration;
         }
     }
 }
