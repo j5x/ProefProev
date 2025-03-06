@@ -1,7 +1,8 @@
 using Platformer.Core;
 using Platformer.Mechanics;
+using Player;
 
-namespace Platformer.Gameplay
+namespace Gameplay
 {
     /// <summary>
     /// Fired when the player character lands after being airborne.
