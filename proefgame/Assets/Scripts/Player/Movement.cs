@@ -7,70 +7,44 @@ namespace Player
     {
         public float maxSpeed = 7f; // Maximum movement speed
         public float jumpTakeOffSpeed = 7f; // Jump force
-        public float dashSpeed = 14f; // Dash speed
-        public float dashDuration = 0.2f; // Duration of the dash
-        public float dashCooldown = 1f; // Cooldown between dashes
 
         private Rigidbody2D rb; // Player's Rigidbody2D
         private bool isGrounded; // Whether the player is on the ground
-        private bool isDashing; // Whether the player is dashing
-        private float dashEndTime; // Time when the dash ends
-        private float dashCooldownEndTime; // Time when the dash cooldown ends
 
         private Transform currentPlatform; // Reference to the platform the player is standing on
 
-        private InputAction m_MoveAction;
-        private InputAction m_JumpAction;
-        private InputAction m_DashAction;
+        private Vector2 moveInput; // Stores movement input
+
+        private Dash dash; // Reference to the Dash script
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
-        }
-
-        private void OnEnable()
-        {
-            // Set up input actions
-            m_MoveAction = new InputAction("Move", binding: "<Gamepad>/leftStick");
-            m_JumpAction = new InputAction("Jump", binding: "<Keyboard>/space");
-            m_DashAction = new InputAction("Dash", binding: "<Keyboard>/shift");
-
-            m_MoveAction.Enable();
-            m_JumpAction.Enable();
-            m_DashAction.Enable();
-        }
-
-        private void OnDisable()
-        {
-            // Disable input actions when they're no longer needed
-            m_MoveAction.Disable();
-            m_JumpAction.Disable();
-            m_DashAction.Disable();
+            dash = GetComponent<Dash>(); // Get the Dash component
         }
 
         private void Update()
         {
-            // Handle movement input
-            Vector2 moveInput = m_MoveAction.ReadValue<Vector2>();
+            // Apply movement
+            Vector2 targetVelocity = new Vector2(moveInput.x * maxSpeed, rb.linearVelocity.y);
+            rb.linearVelocity = targetVelocity;
 
-            // Handle jump input
-            if (isGrounded && m_JumpAction.WasPressedThisFrame())
+            // Update the Dash script with the current movement input
+            dash.UpdateMoveInput(moveInput);
+        }
+
+        // Called by the Input System when movement keys are pressed
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            moveInput = context.ReadValue<Vector2>(); // Get 2D movement input (WASD or arrow keys)
+        }
+
+        // Called by the Input System when jump is pressed
+        public void OnJump(InputAction.CallbackContext context)
+        {
+            if (context.performed && isGrounded)
             {
                 Jump();
-            }
-
-            // Handle dash input
-            if (m_DashAction.WasPressedThisFrame() && Time.time >= dashCooldownEndTime)
-            {
-                Debug.Log("Dash input detected");
-                StartDash(moveInput);
-            }
-
-            // Apply movement
-            if (!isDashing) // Only apply movement if not dashing
-            {
-                Vector2 targetVelocity = new Vector2(moveInput.x * maxSpeed, rb.linearVelocity.y);
-                rb.linearVelocity = targetVelocity;
             }
         }
 
@@ -78,38 +52,6 @@ namespace Player
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpTakeOffSpeed);
             isGrounded = false; // Player is no longer grounded after jumping
-        }
-
-        private void StartDash(Vector2 direction)
-        {
-            isDashing = true;
-            dashEndTime = Time.time + dashDuration;
-            dashCooldownEndTime = Time.time + dashCooldown;
-
-            // Normalize the direction to ensure consistent dash speed
-            if (direction.magnitude > 0)
-            {
-                direction.Normalize();
-            }
-            else
-            {
-                // Default to right if no direction is pressed
-                direction = Vector2.right;
-            }
-
-            // Apply dash velocity in the specified direction
-            rb.linearVelocity = direction * dashSpeed;
-            Debug.Log("Dashing in direction: " + direction + " with velocity: " + rb.linearVelocity);
-
-            // End the dash after the dash duration
-            Invoke(nameof(EndDash), dashDuration);
-        }
-
-        private void EndDash()
-        {
-            isDashing = false;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); // Reset vertical velocity after dash
-            Debug.Log("Dash ended");
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
