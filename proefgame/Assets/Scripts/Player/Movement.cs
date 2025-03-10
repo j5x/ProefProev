@@ -9,17 +9,17 @@ namespace Player
         public float jumpTakeOffSpeed = 7f; // Jump force
 
         private Rigidbody2D rb; // Player's Rigidbody2D
+        private Animator animator; // Animator reference
         private bool isGrounded; // Whether the player is on the ground
 
         private Transform currentPlatform; // Reference to the platform the player is standing on
-
         private Vector2 moveInput; // Stores movement input
-
         private Dash dash; // Reference to the Dash script
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Animator>(); // Get Animator component
             dash = GetComponent<Dash>(); // Get the Dash component
         }
 
@@ -31,6 +31,11 @@ namespace Player
 
             // Update the Dash script with the current movement input
             dash.UpdateMoveInput(moveInput);
+
+            // Update animator parameters
+            animator.SetBool("isJumping", !isGrounded);
+            animator.SetFloat("xVelocity", Mathf.Abs(rb.linearVelocity.x));
+            animator.SetFloat("yVelocity", rb.linearVelocity.y);
         }
 
         // Called by the Input System when movement keys are pressed
@@ -52,6 +57,7 @@ namespace Player
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpTakeOffSpeed);
             isGrounded = false; // Player is no longer grounded after jumping
+            animator.SetBool("isJumping", true); // Update animation
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -60,6 +66,7 @@ namespace Player
             if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
             {
                 isGrounded = true;
+                animator.SetBool("isJumping", false); // Update animation
 
                 // Parent the player to the platform
                 currentPlatform = collision.transform;
@@ -74,11 +81,22 @@ namespace Player
             if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
             {
                 isGrounded = false;
+                animator.SetBool("isJumping", true); // Update animation
 
                 // Unparent the player from the platform
                 transform.SetParent(null);
                 currentPlatform = null;
                 Debug.Log("Left platform");
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            // Handle trigger-based grounding (optional)
+            if (collision.CompareTag("Ground"))
+            {
+                isGrounded = true;
+                animator.SetBool("isJumping", false);
             }
         }
     }
