@@ -2159,7 +2159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 5208025647519338376}
   smoothSpeed: 0.125
-  offset: {x: 0, y: 0, z: 0}
+  offset: {x: 0, y: 0, z: -1}
 --- !u!114 &1909626521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7501,8 +7501,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 763305c07dc4e2247a203c0c78580428, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 7
-  jumpTakeOffSpeed: 7
+  moveSpeed: 7
+  jumpForce: 12
+  gravity: 20
 --- !u!70 &2673348817072573693
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -7779,7 +7780,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -32.94063, y: 10.099745, z: -0.12511703}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1909626519}
@@ -7876,7 +7877,19 @@ MonoBehaviour:
     m_ActionId: 467bfa7f-8a0f-4af6-8294-0f315292e5b6
     m_ActionName: 'Player/AuraShield[/Keyboard/f]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9193600109181959087}
+        m_TargetAssemblyTypeName: Player.Dash, Assembly-CSharp
+        m_MethodName: OnDash
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 298d5995-d4f4-4e5a-b776-214a2ac788b0
     m_ActionName: 'Player/Dash[/Keyboard/shift]'
   - m_PersistentCalls:
@@ -7944,22 +7957,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &5876314570985768697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7913166069529896739}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44a5cb956ca605e4183a31806d4f560f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gun: {fileID: 0}
-  shootingPointPrefab: {fileID: 0}
-  bulletPrefab: {fileID: 0}
-  bulletSpeed: 10
 --- !u!61 &7352488540683721436
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8016,6 +8013,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5208025647519338376}
   - component: {fileID: 5694089102145374662}
+  - component: {fileID: 9193600109181959087}
   - component: {fileID: 374908381380046477}
   - component: {fileID: 3065956344323166946}
   - component: {fileID: 1113931103442972068}
@@ -8023,9 +8021,7 @@ GameObject:
   - component: {fileID: 2673348817072573693}
   - component: {fileID: 321665628638356888}
   - component: {fileID: 1282381043909988746}
-  - component: {fileID: 9193600109181959087}
   - component: {fileID: 5131143369687247866}
-  - component: {fileID: 5876314570985768697}
   - component: {fileID: 8513578394836487468}
   m_Layer: 0
   m_Name: Penny
@@ -8058,8 +8054,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f63f2704b1ffb44abe7577ab3157df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashSpeed: 14
-  dashDuration: 0.2
+  dashSpeed: 30
+  dashDuration: 0.1
   dashCooldown: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
