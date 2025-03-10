@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1e5805613cdd6334a99866a99da629fd
+guid: 612d7187b6f3b4613b8b8c91f943e8fb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5296382647206475215
-    second: Walkcycle_L-20_0
+      213: -957396012054584885
+    second: 6 drums_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Walkcycle_L-20_0
+      name: 6 drums_0
       rect:
         serializedVersion: 2
-        x: 338
-        y: 143
-        width: 1402
-        height: 1481
+        x: 0
+        y: 0
+        width: 765
+        height: 988
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fc5f849c4f7808940800000000000000
-      internalID: 5296382647206475215
+      spriteID: bc16c184665a6b2f0800000000000000
+      internalID: -957396012054584885
       vertices: []
       indices: 
       edges: []
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Walkcycle_L-20_0: 5296382647206475215
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
