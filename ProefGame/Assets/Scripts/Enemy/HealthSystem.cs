@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro; // If using TextMeshPro
 
 namespace Health
 {
@@ -7,36 +9,55 @@ namespace Health
         [SerializeField] private int maxHealth = 10;
         private int currentHealth;
         public bool IsInvulnerable { get; private set; } = false;
-        void Start() => currentHealth = maxHealth;
+
+        [Header("UI Elements")]
+        [SerializeField] private Slider healthBar;
+        [SerializeField] private TMP_Text healthText;
+        [SerializeField] private Button takeDamageButton;
+
+        public delegate void OnDeathHandler();
+        public event OnDeathHandler OnDeath; // Event triggered when health reaches zero
+
+        void Start()
+        {
+            currentHealth = maxHealth;
+            UpdateHealthUI();
+
+            if (takeDamageButton != null)
+                takeDamageButton.onClick.AddListener(() => TakeDamage(1));
+        }
 
         public void TakeDamage(int damage)
         {
-            if (IsInvulnerable) return; // Do nothing if invulnerable
-            if (currentHealth <= 0) return; // Prevent extra calls after death
+            if (IsInvulnerable) return;
+            if (currentHealth <= 0) return;
 
             currentHealth -= damage;
             Debug.Log($"{gameObject.name} took {damage} damage! HP left: {currentHealth}");
 
+            UpdateHealthUI();
+
             if (currentHealth <= 0)
             {
                 Debug.Log($"{gameObject.name} destroyed!");
+                OnDeath?.Invoke(); // Trigger game-over event
                 Destroy(gameObject);
             }
         }
-
-        void OnTriggerEnter2D(Collider2D collision)
-        {
-            if (!collision.CompareTag("Bullet")) return;
-
-            Debug.Log($"{gameObject.name} hit by {collision.gameObject.name}");
-
-            TakeDamage(1);
-            Destroy(collision.gameObject);
-        }
-
+        
         public void SetInvulnerable(bool invulnerable)
         {
             IsInvulnerable = invulnerable;
+        }
+
+
+        private void UpdateHealthUI()
+        {
+            if (healthBar != null)
+                healthBar.value = (float)currentHealth / maxHealth;
+
+            if (healthText != null)
+                healthText.text = $"{currentHealth} / {maxHealth}";
         }
     }
 }

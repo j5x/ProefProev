@@ -119,6 +119,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &26707092 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5848703984228945011, guid: 7d60c822c3f1b408ea7a00ecdb5e047a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2121509222}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &68234854
 GameObject:
   m_ObjectHideFlags: 0
@@ -1717,6 +1723,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1890824736}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1252528940 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 368878719536448185, guid: 7d60c822c3f1b408ea7a00ecdb5e047a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2121509222}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1347000642
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1921,6 +1933,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44a5cb956ca605e4183a31806d4f560f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1390259838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390259823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b6fc4e6a29ef15429523ffcec7f31f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 10
 --- !u!1 &1405131767
 GameObject:
   m_ObjectHideFlags: 0
@@ -7493,12 +7518,24 @@ PrefabInstance:
       propertyPath: m_Interpolate
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5351357493290107047, guid: 7d60c822c3f1b408ea7a00ecdb5e047a,
+        type: 3}
+      propertyPath: gun
+      value: 
+      objectReference: {fileID: 26707092}
+    - target: {fileID: 5351357493290107047, guid: 7d60c822c3f1b408ea7a00ecdb5e047a,
+        type: 3}
+      propertyPath: shootingPointPrefab
+      value: 
+      objectReference: {fileID: 1252528940}
     - target: {fileID: 5686243638036882173, guid: 7d60c822c3f1b408ea7a00ecdb5e047a,
         type: 3}
       propertyPath: jumpTakeOffSpeed
       value: 10
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6082575806313374961, guid: 7d60c822c3f1b408ea7a00ecdb5e047a, type: 3}
+    - {fileID: 114230831923080080, guid: 7d60c822c3f1b408ea7a00ecdb5e047a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -7506,6 +7543,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1390259836}
+    - targetCorrespondingSourceObject: {fileID: 1208144871472054, guid: 7d60c822c3f1b408ea7a00ecdb5e047a,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1390259838}
   m_SourcePrefab: {fileID: 100100000, guid: 7d60c822c3f1b408ea7a00ecdb5e047a, type: 3}
 --- !u!1001 &3088214864292468662
 PrefabInstance:

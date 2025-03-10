@@ -1,7 +1,7 @@
 using System.Collections;
+using Health;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Health;
 
 public class AuraShield : MonoBehaviour
 {
@@ -13,11 +13,10 @@ public class AuraShield : MonoBehaviour
     private bool isOnCooldown = false; // Is the shield on cooldown?
     private float cooldownEndTime; // Time when the cooldown ends
 
-    private InputAction m_AuraShieldAction; // Input action for the shield
     private HealthSystem playerHealth; // Reference to the player's HealthSystem component
     private GameObject shieldInstance; // Reference to the instantiated shield
 
-    void Awake()
+    private void Awake()
     {
         // Get the HealthSystem component from the player
         playerHealth = GetComponent<HealthSystem>();
@@ -25,29 +24,18 @@ public class AuraShield : MonoBehaviour
         {
             Debug.LogError("HealthSystem component not found on the player!");
         }
-
-        // Find and enable the AuraShield input action
-        m_AuraShieldAction = InputSystem.actions.FindAction("Player/Aurashield");
-        if (m_AuraShieldAction != null)
-        {
-            m_AuraShieldAction.Enable();
-        }
-        else
-        {
-            Debug.LogError("AuraShield input action not found!");
-        }
     }
 
-    void Update()
+    // Called by the Input System when aura shield is activated
+    public void OnAuraShield(InputAction.CallbackContext context)
     {
-        // Check if the shield input is pressed, the shield is not active, and it's not on cooldown
-        if (m_AuraShieldAction.WasPressedThisFrame() && !isShieldActive && !isOnCooldown)
+        if (context.performed && !isShieldActive && !isOnCooldown)
         {
             ActivateShield();
         }
     }
 
-    void ActivateShield()
+    private void ActivateShield()
     {
         // Instantiate the shield prefab at the player's position
         shieldInstance = Instantiate(shieldPrefab, transform.position, Quaternion.identity);
