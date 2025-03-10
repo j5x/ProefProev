@@ -1,85 +1,74 @@
+using Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Player
+public class Movement : MonoBehaviour
 {
-    public class Movement : MonoBehaviour
+    public float moveSpeed = 7f; // Speed of movement
+    public float jumpForce = 12f; // Jump force
+    public float gravity = 40f; // Custom gravity
+
+    private Vector2 moveInput; // Stores movement input
+    private Dash dash; // Reference to dash script
+    private bool isGrounded;
+    private float verticalVelocity = 0f; // Manages gravity and jumping
+
+    private void Awake()
     {
-        public float maxSpeed = 7f; // Maximum movement speed
-        public float jumpTakeOffSpeed = 7f; // Jump force
+        dash = GetComponent<Dash>(); // Get the Dash component
+    }
 
-        private Rigidbody2D rb; // Player's Rigidbody2D
-        private bool isGrounded; // Whether the player is on the ground
+    private void Update()
+    {
+        if (!dash) return;
 
-        private Transform currentPlatform; // Reference to the platform the player is standing on
+        // Apply movement
+        Vector2 movement = new Vector2(moveInput.x * moveSpeed, verticalVelocity);
+        transform.position += (Vector3)(movement * Time.deltaTime);
 
-        private Vector2 moveInput; // Stores movement input
-
-        private Dash dash; // Reference to the Dash script
-
-        private void Awake()
+        // Apply gravity if not grounded
+        if (!isGrounded)
         {
-            rb = GetComponent<Rigidbody2D>();
-            dash = GetComponent<Dash>(); // Get the Dash component
+            verticalVelocity -= gravity * Time.deltaTime;
         }
 
-        private void Update()
-        {
-            // Apply movement
-            Vector2 targetVelocity = new Vector2(moveInput.x * maxSpeed, rb.linearVelocity.y);
-            rb.linearVelocity = targetVelocity;
+        // Update dash with movement input
+        dash.UpdateMoveInput(moveInput);
+    }
 
-            // Update the Dash script with the current movement input
-            dash.UpdateMoveInput(moveInput);
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.performed && isGrounded)
+        {
+            Jump();
         }
+    }
 
-        // Called by the Input System when movement keys are pressed
-        public void OnMove(InputAction.CallbackContext context)
+    private void Jump()
+    {
+        verticalVelocity = jumpForce;
+        isGrounded = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Platform"))
         {
-            moveInput = context.ReadValue<Vector2>(); // Get 2D movement input (WASD or arrow keys)
+            isGrounded = true;
+            verticalVelocity = 0; // Reset gravity when landing
         }
+    }
 
-        // Called by the Input System when jump is pressed
-        public void OnJump(InputAction.CallbackContext context)
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Platform"))
         {
-            if (context.performed && isGrounded)
-            {
-                Jump();
-            }
-        }
-
-        private void Jump()
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpTakeOffSpeed);
-            isGrounded = false; // Player is no longer grounded after jumping
-        }
-
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            // Check if the player is standing on a platform
-            if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
-            {
-                isGrounded = true;
-
-                // Parent the player to the platform
-                currentPlatform = collision.transform;
-                transform.SetParent(currentPlatform);
-                Debug.Log("Landed on platform: " + currentPlatform.name);
-            }
-        }
-
-        private void OnCollisionExit2D(Collision2D collision)
-        {
-            // Check if the player leaves the platform
-            if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("MovingPlatform"))
-            {
-                isGrounded = false;
-
-                // Unparent the player from the platform
-                transform.SetParent(null);
-                currentPlatform = null;
-                Debug.Log("Left platform");
-            }
+            isGrounded = false;
         }
     }
 }

@@ -7,77 +7,53 @@ namespace Player
     {
         public float dashSpeed = 14f; // Dash speed
         public float dashDuration = 0.2f; // Duration of the dash
-        public float dashCooldown = 1f; // Cooldown between dashes
+        public float dashCooldown = 0.5f; // Cooldown before dashing again
 
-        private Rigidbody2D rb; // Player's Rigidbody2D
-        private bool isDashing; // Whether the player is dashing
-        private float dashEndTime; // Time when the dash ends
-        private float dashCooldownEndTime; // Time when the dash cooldown ends
+        private bool isDashing = false;
+        private float dashEndTime;
+        private float dashCooldownEndTime;
+        private Vector2 lastMoveInput = Vector2.right; // Stores last movement input
+        private Vector2 dashDirection;
 
-        private Vector2 moveInput; // Stores movement input (for omni-directional dash)
-
-        private void Awake()
+        private void Update()
         {
-            rb = GetComponent<Rigidbody2D>();
-            if (rb == null)
+            if (isDashing)
             {
-                Debug.LogError("Rigidbody2D component not found on the player!");
+                transform.position += (Vector3)(dashDirection * dashSpeed * Time.deltaTime);
+
+                if (Time.time >= dashEndTime)
+                {
+                    isDashing = false;
+                }
             }
         }
 
-        // Called by the Input System when dash is pressed
         public void OnDash(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.performed && Time.time >= dashCooldownEndTime)
             {
-                Debug.Log("Dash input detected");
-                if (Time.time >= dashCooldownEndTime)
-                {
-                    StartDash(moveInput); // Pass the movement direction for dash
-                }
-                else
-                {
-                    Debug.Log("Dash is on cooldown");
-                }
+                StartDash();
             }
         }
 
-        // Called by the Movement script to update movement input
         public void UpdateMoveInput(Vector2 input)
         {
-            moveInput = input;
+            if (input.sqrMagnitude > 0) // If input is not zero, update lastMoveInput
+            {
+                lastMoveInput = input.normalized;
+            }
         }
 
-        private void StartDash(Vector2 direction)
+        private void StartDash()
         {
             isDashing = true;
             dashEndTime = Time.time + dashDuration;
             dashCooldownEndTime = Time.time + dashCooldown;
 
-            // Normalize the direction to ensure consistent dash speed
-            if (direction.magnitude > 0)
-            {
-                direction.Normalize();
-            }
-            else
-            {
-                // Default to right if no direction is pressed
-                direction = Vector2.right;
-            }
+            // Use the last movement input as dash direction
+            dashDirection = lastMoveInput;
 
-            // Apply dash velocity in the specified direction
-            rb.linearVelocity = direction * dashSpeed;
-            Debug.Log("Dashing in direction: " + direction + " with velocity: " + rb.linearVelocity);
-
-            // End the dash after the dash duration
-            Invoke(nameof(EndDash), dashDuration);
-        }
-
-        private void EndDash()
-        {
-            isDashing = false;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); // Reset vertical velocity after dash
-            Debug.Log("Dash ended");
+            Debug.Log("Dashing in direction: " + dashDirection);
         }
     }
 }
