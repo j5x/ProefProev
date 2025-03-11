@@ -8,7 +8,9 @@ namespace Player
         public GameObject shootingPointPrefab; // Assign ShootingPoint prefab
         private Transform shootingPoint; // The actual shooting point instance
         public GameObject bulletPrefab; // Assign Bullet prefab
+        public Transform marker; // Assign the marker object in the Inspector
         public float bulletSpeed = 10f;
+        public float markerDistance = 20f; // Distance from player
         public Camera mainCamera;
 
         private SpriteRenderer playerSpriteRenderer;
@@ -30,6 +32,7 @@ namespace Player
         void Update()
         {
             HandleAiming();
+            UpdateMarkerPosition(); // Update marker after aiming
 
             if (Input.GetMouseButtonDown(0)) // Left Mouse Button
             {
@@ -65,6 +68,15 @@ namespace Player
             }
         }
 
+        private void UpdateMarkerPosition()
+        {
+            if (marker == null) return;
+
+            // Place the marker at a fixed distance in the current aiming direction
+            marker.position = transform.position + gun.right * markerDistance;
+            marker.rotation = gun.rotation;
+        }
+
         private void ShootBullet()
         {
             if (bulletPrefab == null || shootingPoint == null) return;
@@ -81,4 +93,3 @@ namespace Player
         }
     }
 }
-    
