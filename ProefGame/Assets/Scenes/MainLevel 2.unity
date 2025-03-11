@@ -2009,7 +2009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 3065956344933082768}
-  marker: {fileID: 0}
+  marker: {fileID: 2512138041941063573}
 --- !u!1 &1555691627
 GameObject:
   m_ObjectHideFlags: 0
@@ -8222,10 +8222,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44a5cb956ca605e4183a31806d4f560f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  markerPrefab: {fileID: 2512138041941063573}
   bulletPrefab: {fileID: 9047849298865090815, guid: efa045c702e5e0546ac830a973cf3486,
     type: 3}
-  markerPrefab: {fileID: 2512138041941063573}
-  markerDistance: 12.5
+  markerDistance: 1
   mainCamera: {fileID: 6269030265062738737}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
