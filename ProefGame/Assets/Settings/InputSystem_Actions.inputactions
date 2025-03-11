@@ -544,6 +544,17 @@
                 },
                 {
                     "name": "",
+                    "id": "d75ddee3-24f4-4f67-a295-dd5b27ef4c85",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "c2da5c45-4bc0-4c2f-8df9-0a600d6f4f8c",
                     "path": "<Keyboard>/f",
                     "interactions": "",

@@ -5,26 +5,17 @@ namespace Player
 {
     public class Dash : MonoBehaviour
     {
-        public float dashSpeed = 14f; // Dash speed
-        public float dashDuration = 0.2f; // Duration of the dash
-        public float dashCooldown = 0.5f; // Cooldown before dashing again
+        public float dashDistance = 5f;
+        public float dashCooldown = 0.3f;
 
-        private bool isDashing = false;
-        private float dashEndTime;
+        private Vector2 lastDirection = Vector2.right;
         private float dashCooldownEndTime;
-        private Vector2 lastMoveInput = Vector2.right; // Stores last movement input
-        private Vector2 dashDirection;
 
         private void Update()
         {
-            if (isDashing)
+            if (Time.time < dashCooldownEndTime)
             {
-                transform.position += (Vector3)(dashDirection * dashSpeed * Time.deltaTime);
-
-                if (Time.time >= dashEndTime)
-                {
-                    isDashing = false;
-                }
+                Debug.Log("Dash on cooldown");
             }
         }
 
@@ -32,28 +23,23 @@ namespace Player
         {
             if (context.performed && Time.time >= dashCooldownEndTime)
             {
-                StartDash();
+                DashMove();
             }
         }
 
         public void UpdateMoveInput(Vector2 input)
         {
-            if (input.sqrMagnitude > 0) // If input is not zero, update lastMoveInput
+            if (input.sqrMagnitude > 0.1f) 
             {
-                lastMoveInput = input.normalized;
+                lastDirection = input.normalized;
             }
         }
 
-        private void StartDash()
+        private void DashMove()
         {
-            isDashing = true;
-            dashEndTime = Time.time + dashDuration;
+            transform.position += (Vector3)(lastDirection * dashDistance);
             dashCooldownEndTime = Time.time + dashCooldown;
-
-            // Use the last movement input as dash direction
-            dashDirection = lastMoveInput;
-
-            Debug.Log("Dashing in direction: " + dashDirection);
+            Debug.Log("Dashed in direction: " + lastDirection);
         }
     }
 }
