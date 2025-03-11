@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class HealthDummy : MonoBehaviour
 {
-    public int maxHealth; // Max health of the dummy
+    public int maxHealth = 10; // Max health of the dummy
     private int currentHealth; // Current health of the dummy
 
     private Boss boss; // Reference to the boss
@@ -30,19 +30,20 @@ public class HealthDummy : MonoBehaviour
             Die();
         }
     }
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Bullet")) // Make sure bullets have this tag
-        {
-            TakeDamage(1);
-            Destroy(collision.gameObject); // Destroy the bullet on impact
-        }
-    }
 
     private void Die()
     {
         Debug.Log($"{gameObject.name} died!");
         boss.DummyDied(); // Notify the boss that this dummy died
         Destroy(gameObject); // Destroy the dummy
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Bullet")) // Make sure bullets have this tag
+        {
+            TakeDamage(1);
+            Destroy(collision.gameObject); // Destroy the bullet on impact
+        }
     }
 }
