@@ -4,31 +4,29 @@ namespace Player
 {
     public class PlayerFlip : MonoBehaviour
     {
-        [SerializeField] private SpriteRenderer _spriteRenderer; // Player sprite
-        [SerializeField] private Transform marker; // Gun transform
+        private SpriteRenderer spriteRenderer;
+        private bool isWalking;
 
-        private float horizontalInput;
-        private bool facingRight = true;
+        void Start()
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
 
         void Update()
         {
-            horizontalInput = Input.GetAxis("Horizontal");
-            SetupDirectionByComponent(); // Flip without affecting camera
+            HandleWalking();
         }
 
-        private void SetupDirectionByComponent()
+        private void HandleWalking()
         {
-            if (horizontalInput < 0 && facingRight || horizontalInput > 0 && !facingRight)
+            // Check if the player is moving left or right
+            isWalking = Mathf.Abs(GetComponent<Rigidbody2D>().linearVelocity.x) > 0.1f;
+
+            if (isWalking)
             {
-                facingRight = !facingRight;
-
-                // Flip Player Sprite
-                _spriteRenderer.flipX = !facingRight;
-
-                // Flip Gun by setting its local scale X
-                Vector3 markerScale = marker.localScale;
-                markerScale.y *= -1;
-                marker.localScale = markerScale;
+                // Flip sprite based on movement direction
+                bool shouldFlip = GetComponent<Rigidbody2D>().linearVelocity.x < 0;
+                spriteRenderer.flipX = shouldFlip;
             }
         }
     }
