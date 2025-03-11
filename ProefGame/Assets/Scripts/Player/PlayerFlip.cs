@@ -27,7 +27,7 @@ namespace Player
 
                 // Flip Gun by setting its local scale X
                 Vector3 markerScale = marker.localScale;
-                markerScale.x *= -1;
+                markerScale.y *= -1;
                 marker.localScale = markerScale;
             }
         }

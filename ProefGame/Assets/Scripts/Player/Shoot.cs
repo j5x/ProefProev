@@ -34,20 +34,17 @@ namespace Player
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 aimDirection = (mousePos - (Vector2)transform.position).normalized;
 
-            // Get raw angle in degrees
+            // Get raw angle in degrees to rotate markerPrefab smoothly
             float rawAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
 
-            // Snap angle to 8-way increments (each step is 45°)
-            float snappedAngle = Mathf.Round(rawAngle / 45f) * 45f;
-
-            // Apply snapped rotation to the marker (marker now acts as gun)
+            // Apply smooth rotation to marker (so it never flips upside down)
             if (markerPrefab != null)
             {
-                markerPrefab.rotation = Quaternion.Euler(0, 0, snappedAngle);
+                markerPrefab.rotation = Quaternion.Euler(0, 0, rawAngle);
             }
 
             // Flip player sprite if aiming left (based on the angle)
-            bool shouldFlip = snappedAngle > 90 || snappedAngle < -90;
+            bool shouldFlip = rawAngle > 90 || rawAngle < -90;
             if (playerSpriteRenderer != null)
             {
                 playerSpriteRenderer.flipX = shouldFlip;

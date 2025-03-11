@@ -710,7 +710,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 71.918, y: 0.00044250488}
+  m_AnchoredPosition: {x: 71.918, y: 0.00045776367}
   m_SizeDelta: {x: 423.83, y: 122.92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &520312370
@@ -7460,7 +7460,7 @@ SpriteRenderer:
   m_Sprite: {fileID: -2976525540898021518, guid: d29157c718f3a604d8d8f247a5ddd5f6,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 18.82, y: 9.08}
@@ -8225,7 +8225,7 @@ MonoBehaviour:
   markerPrefab: {fileID: 2512138041941063573}
   bulletPrefab: {fileID: 9047849298865090815, guid: efa045c702e5e0546ac830a973cf3486,
     type: 3}
-  markerDistance: 1
+  markerDistance: 1.5
   mainCamera: {fileID: 6269030265062738737}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
