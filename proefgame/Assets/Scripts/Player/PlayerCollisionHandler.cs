@@ -1,35 +1,53 @@
+using Enemy;
 using UnityEngine;
 
-public class PlayerCollisionHandler : MonoBehaviour
+namespace Player
 {
-    private DialogManager dialogManager; // Reference to the DialogManager
-
-    void Start()
+    public class PlayerCollisionHandler : MonoBehaviour
     {
-        // Find the DialogManager in the scene
-        dialogManager = FindObjectOfType<DialogManager>();
+        private DialogManager dialogManager; // Reference to the DialogManager
+        private HealthSystem healthSystem;  // Reference to the player's HealthSystem
 
-        if (dialogManager == null)
+        void Start()
         {
-            Debug.LogError("DialogManager not found in the scene!");
-        }
-    }
+            // Find the DialogManager in the scene
+            dialogManager = FindObjectOfType<DialogManager>();
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        // Check the tag of the object the player collided with
-        if (other.CompareTag("Spawn"))
-        {
-            dialogManager.StartDialog(dialogManager.spawnDialog, dialogManager.spawnIcon);
+            if (dialogManager == null)
+            {
+                Debug.LogError("DialogManager not found in the scene!");
+            }
+
+            // Get the HealthSystem component attached to the player
+            healthSystem = GetComponent<HealthSystem>();
+
+            if (healthSystem == null)
+            {
+                Debug.LogError("HealthSystem not found on player!");
+            }
         }
-        else if (other.CompareTag("BossRoom"))
+
+        void OnTriggerEnter2D(Collider2D other)
         {
-            dialogManager.StartDialog(dialogManager.bossRoomDialog, dialogManager.bossRoomIcon);
+            // Check the tag of the object the player collided with
+            if (other.CompareTag("Spawn"))
+            {
+                dialogManager.StartDialog(dialogManager.spawnDialog, dialogManager.spawnIcon);
+            }
+            else if (other.CompareTag("BossRoom"))
+            {
+                dialogManager.StartDialog(dialogManager.bossRoomDialog, dialogManager.bossRoomIcon);
+            }
+            else if (other.CompareTag("Tutorial"))
+            {
+                dialogManager.StartDialog(dialogManager.tutorialDialog, dialogManager.tutorialIcon);
+            }
+            else if (other.CompareTag("Enemy")) // Check if the player collided with an enemy
+            {
+                // Call TakeDamage method from the HealthSystem when colliding with an enemy
+                healthSystem.TakeDamage(1); // Adjust damage value as needed
+            }
+            // Add more conditions for other tags as needed
         }
-        else if (other.CompareTag("Tutorial"))
-        {
-            dialogManager.StartDialog(dialogManager.tutorialDialog, dialogManager.tutorialIcon);
-        }
-        // Add more conditions for other tags as needed
     }
 }

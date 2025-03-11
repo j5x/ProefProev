@@ -1,5 +1,6 @@
+using Enemy;
 using UnityEngine;
-using Health;
+
 public class EnemyAI : MonoBehaviour
 {
     [SerializeField] private float moveSpeed; // Speed at which the enemy moves

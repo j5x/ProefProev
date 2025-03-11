@@ -1,3 +1,4 @@
+using Enemy;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -5,7 +6,7 @@ using UnityEngine.UI;
 public class GameOverManager : MonoBehaviour
 {
     [SerializeField] private GameObject gameOverUI; // Reference to the Game Over UI
-    [SerializeField] private Health.HealthSystem playerHealth;
+    [SerializeField] private HealthSystem playerHealth;
     [SerializeField] private AudioSource audioSource; // Audio source for sad music
     [SerializeField] private AudioClip sadMusic; // Assign a sad music clip in the Inspector
     [SerializeField] private Button restartButton; // UI Button for restarting the game

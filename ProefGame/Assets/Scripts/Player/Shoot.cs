@@ -47,7 +47,7 @@ namespace Player
 
             // Flip player sprite based on the aiming direction, but only if not walking
             bool shouldFlip = rawAngle > 90 || rawAngle < -90;
-            if (!isAiming && Mathf.Abs(GetComponent<Rigidbody2D>().velocity.x) < 0.1f)
+            if (!isAiming && Mathf.Abs(GetComponent<Rigidbody2D>().linearVelocity.x) < 0.1f)
             {
                 playerSpriteRenderer.flipX = shouldFlip;
             }
@@ -70,7 +70,7 @@ namespace Player
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.velocity = markerPrefab.right * 10f; // Assuming Bullet.cs handles bullet speed and damage
+                rb.linearVelocity = markerPrefab.right * 10f; // Assuming Bullet.cs handles bullet speed and damage
             }
 
             // Trigger shooting animation
