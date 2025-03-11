@@ -4,13 +4,10 @@ namespace Player
 {
     public class Shoot : MonoBehaviour
     {
-        public Transform gun; // Assign Gun Transform (child of player hand)
-        public GameObject shootingPointPrefab; // Assign ShootingPoint prefab
         private Transform shootingPoint; // The actual shooting point instance
         public GameObject bulletPrefab; // Assign Bullet prefab
-        public Transform marker; // Assign the marker object in the Inspector
-        public float bulletSpeed = 10f;
-        public float markerDistance = 20f; // Distance from player
+        public Transform markerPrefab; // Assign the marker object in the Inspector
+        public float markerDistance = 3f; // Distance from player
         public Camera mainCamera;
 
         private SpriteRenderer playerSpriteRenderer;
@@ -20,13 +17,6 @@ namespace Player
         {
             playerSpriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
-
-            // Instantiate Shooting Point at the gun's position
-            if (shootingPointPrefab != null)
-            {
-                shootingPoint = Instantiate(shootingPointPrefab, gun.position, gun.rotation).transform;
-                shootingPoint.SetParent(gun);
-            }
         }
 
         void Update()
@@ -51,41 +41,39 @@ namespace Player
             // Snap angle to 8-way increments (each step is 45°)
             float snappedAngle = Mathf.Round(rawAngle / 45f) * 45f;
 
-            // Apply snapped rotation to the gun
-            gun.rotation = Quaternion.Euler(0, 0, snappedAngle);
+            // Apply snapped rotation to the shooting point (handles the aiming)
+            if (shootingPoint != null)
+            {
+                shootingPoint.rotation = Quaternion.Euler(0, 0, snappedAngle);
+            }
 
-            // Flip player sprite if aiming left
+            // Flip player sprite if aiming left (based on the angle)
             bool shouldFlip = snappedAngle > 90 || snappedAngle < -90;
             if (playerSpriteRenderer != null)
             {
                 playerSpriteRenderer.flipX = shouldFlip;
             }
-
-            // Keep shooting point rotation aligned with gun
-            if (shootingPoint != null)
-            {
-                shootingPoint.rotation = gun.rotation;
-            }
         }
 
         private void UpdateMarkerPosition()
         {
-            if (marker == null) return;
+            if (markerPrefab == null || shootingPoint == null) return;
 
             // Place the marker at a fixed distance in the current aiming direction
-            marker.position = transform.position + gun.right * markerDistance;
-            marker.rotation = gun.rotation;
+            markerPrefab.position = transform.position + shootingPoint.right * markerDistance;
+            markerPrefab.rotation = shootingPoint.rotation;
         }
 
         private void ShootBullet()
         {
             if (bulletPrefab == null || shootingPoint == null) return;
 
+            // Instantiate the bullet and set its velocity using Bullet.cs logic
             GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, shootingPoint.rotation);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.linearVelocity = shootingPoint.right * bulletSpeed;
+                rb.linearVelocity = shootingPoint.right * 10f; // Assuming Bullet.cs handles bullet speed and damage
             }
 
             // Trigger shooting animation

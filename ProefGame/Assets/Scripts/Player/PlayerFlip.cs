@@ -5,7 +5,7 @@ namespace Player
     public class PlayerFlip : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _spriteRenderer; // Player sprite
-        [SerializeField] private Transform gun; // Gun transform
+        [SerializeField] private Transform marker; // Gun transform
 
         private float horizontalInput;
         private bool facingRight = true;
@@ -26,9 +26,9 @@ namespace Player
                 _spriteRenderer.flipX = !facingRight;
 
                 // Flip Gun by setting its local scale X
-                Vector3 gunScale = gun.localScale;
-                gunScale.x *= -1;
-                gun.localScale = gunScale;
+                Vector3 markerScale = marker.localScale;
+                markerScale.x *= -1;
+                marker.localScale = markerScale;
             }
         }
     }
