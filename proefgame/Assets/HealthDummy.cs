@@ -2,19 +2,21 @@ using UnityEngine;
 
 public class HealthDummy : MonoBehaviour
 {
-    public int maxHealth = 10; // Max health of the dummy
+    public int maxHealth; // Max health of the dummy
     private int currentHealth; // Current health of the dummy
 
-    [SerializeField] private Boss boss; // Reference to the Boss script (not GameObject)
+    private Boss boss; // Reference to the boss
+
+    // Call this method to set the boss reference
+    public void SetBoss(Boss bossReference)
+    {
+        boss = bossReference;
+        Debug.Log($"{gameObject.name} linked to boss: {boss != null}");
+    }
 
     private void Start()
     {
         currentHealth = maxHealth; // Initialize health
-        boss = FindObjectOfType<Boss>(); // Find the Boss script in the scene
-        if (boss == null)
-        {
-            Debug.LogError("Boss not found in the scene!");
-        }
     }
 
     // Call this method when the dummy takes damage
@@ -26,6 +28,14 @@ public class HealthDummy : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
+        }
+    }
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Bullet")) // Make sure bullets have this tag
+        {
+            TakeDamage(1);
+            Destroy(collision.gameObject); // Destroy the bullet on impact
         }
     }
 
