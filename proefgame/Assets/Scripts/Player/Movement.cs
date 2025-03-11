@@ -1,74 +1,83 @@
-using Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour
+namespace Player
 {
-    public float moveSpeed = 7f; // Speed of movement
-    public float jumpForce = 12f; // Jump force
-    public float gravity = 40f; // Custom gravity
-
-    private Vector2 moveInput; // Stores movement input
-    private Dash dash; // Reference to dash script
-    private bool isGrounded;
-    private float verticalVelocity = 0f; // Manages gravity and jumping
-
-    private void Awake()
+    public class Movement : MonoBehaviour
     {
-        dash = GetComponent<Dash>(); // Get the Dash component
-    }
+        public float moveSpeed = 7f; // Speed of movement
+        public float jumpForce = 12f; // Jump force
+        public float gravity = 40f; // Custom gravity
 
-    private void Update()
-    {
-        if (!dash) return;
+        private Vector2 moveInput; // Stores movement input
+        private Dash dash; // Reference to dash script
+        private bool isGrounded;
+        
+        private Animator animator; // Animator reference
+        private Rigidbody2D rb; // Reference to Rigidbody2D for movement
 
-        // Apply movement
-        Vector2 movement = new Vector2(moveInput.x * moveSpeed, verticalVelocity);
-        transform.position += (Vector3)(movement * Time.deltaTime);
-
-        // Apply gravity if not grounded
-        if (!isGrounded)
+        private void Awake()
         {
-            verticalVelocity -= gravity * Time.deltaTime;
+            dash = GetComponent<Dash>(); // Get the Dash component
+            animator = GetComponent<Animator>(); // Get the Animator component
+            rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
         }
 
-        // Update dash with movement input
-        dash.UpdateMoveInput(moveInput);
-    }
-
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        moveInput = context.ReadValue<Vector2>();
-    }
-
-    public void OnJump(InputAction.CallbackContext context)
-    {
-        if (context.performed && isGrounded)
+        private void Update()
         {
-            Jump();
+            if (!dash) return;
+
+            // Update Animator parameters based on movement and jump state
+            animator.SetFloat("xVelocity", Mathf.Abs(rb.linearVelocity.x)); // Update xVelocity
+            animator.SetFloat("yVelocity", rb.linearVelocity.y); // Update yVelocity
+            animator.SetBool("isJumping", !isGrounded); // Set isJumping based on ground status
         }
-    }
 
-    private void Jump()
-    {
-        verticalVelocity = jumpForce;
-        isGrounded = false;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
+        private void FixedUpdate()
         {
-            isGrounded = true;
-            verticalVelocity = 0; // Reset gravity when landing
+            // Apply movement: horizontal velocity only, as vertical is managed by physics (gravity & jumping)
+            Vector2 movement = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y); 
+            rb.linearVelocity = movement;
+
+            // Update Animator for xVelocity and yVelocity
+            animator.SetFloat("xVelocity", Mathf.Abs(rb.linearVelocity.x)); // Update xVelocity
+            animator.SetFloat("yVelocity", rb.linearVelocity.y); // Update yVelocity
         }
-    }
 
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
+        public void OnMove(InputAction.CallbackContext context)
         {
-            isGrounded = false;
+            moveInput = context.ReadValue<Vector2>();
+        }
+
+        public void OnJump(InputAction.CallbackContext context)
+        {
+            if (context.performed && isGrounded)
+            {
+                Jump();
+            }
+        }
+
+        private void Jump()
+        {
+            // Apply the jump force directly to the Rigidbody2D's y velocity
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce); // Set the vertical velocity for the jump
+            isGrounded = false; // Player is no longer grounded after jumping
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("Platform"))
+            {
+                isGrounded = true; // Player is grounded when they touch a platform
+            }
+        }
+
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("Platform"))
+            {
+                isGrounded = false; // Player is no longer grounded after leaving the platform
+            }
         }
     }
 }

@@ -4,11 +4,9 @@ namespace Player
 {
     public class Shoot : MonoBehaviour
     {
-        public Transform gun; // Assign Gun Transform (child of player hand)
-        public GameObject shootingPointPrefab; // Assign ShootingPoint prefab
-        private Transform shootingPoint; // The actual shooting point instance
+        public Transform markerPrefab; // The marker will now act as the gun
         public GameObject bulletPrefab; // Assign Bullet prefab
-        public float bulletSpeed = 10f;
+        public float markerDistance = 3f; // Distance from player for the marker position
         public Camera mainCamera;
 
         private SpriteRenderer playerSpriteRenderer;
@@ -16,90 +14,65 @@ namespace Player
 
         void Start()
         {
-            // Get player sprite renderer to check for flipping
             playerSpriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
-
-            // Instantiate Shooting Point at the gun's position
-            if (shootingPointPrefab != null)
-            {
-                shootingPoint = Instantiate(shootingPointPrefab, gun.position, gun.rotation).transform;
-                shootingPoint.SetParent(gun);
-            }
         }
 
         void Update()
         {
             HandleAiming();
+            UpdateMarkerPosition(); // Update marker position after aiming
 
             if (Input.GetMouseButtonDown(0)) // Left Mouse Button
             {
                 ShootBullet();
             }
-
-            // Super Attack (Commented out for now)
-            /*
-            if (Input.GetMouseButtonDown(1)) // Right Mouse Button (for Super Attack)
-            {
-                ShootSuperAttack();
-            }
-            */
         }
 
         private void HandleAiming()
         {
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 aimDirection = (mousePos - (Vector2)gun.position).normalized;
+            Vector2 aimDirection = (mousePos - (Vector2)transform.position).normalized;
 
-            float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-            gun.rotation = Quaternion.Euler(0, 0, angle);
+            // Get raw angle in degrees to rotate markerPrefab smoothly
+            float rawAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
 
-            // Determine if the player should flip
-            bool shouldFlip = angle > 90 || angle < -90;
-            
-            // Flip gun sprite based on aiming direction
-            gun.GetComponent<SpriteRenderer>().flipY = shouldFlip;
+            // Apply smooth rotation to marker (so it never flips upside down)
+            if (markerPrefab != null)
+            {
+                markerPrefab.rotation = Quaternion.Euler(0, 0, rawAngle);
+            }
 
-            // Flip player sprite if necessary
+            // Flip player sprite if aiming left (based on the angle)
+            bool shouldFlip = rawAngle > 90 || rawAngle < -90;
             if (playerSpriteRenderer != null)
             {
                 playerSpriteRenderer.flipX = shouldFlip;
             }
+        }
 
-            // Keep shooting point rotation aligned with gun
-            if (shootingPoint != null)
-            {
-                shootingPoint.rotation = gun.rotation;
-            }
+        private void UpdateMarkerPosition()
+        {
+            if (markerPrefab == null) return;
+
+            // Place the marker at a fixed distance in the current aiming direction
+            markerPrefab.position = transform.position + markerPrefab.right * markerDistance;
         }
 
         private void ShootBullet()
         {
-            if (bulletPrefab == null || shootingPoint == null) return;
+            if (bulletPrefab == null || markerPrefab == null) return;
 
-            GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, shootingPoint.rotation);
+            // Instantiate the bullet and set its velocity using Bullet.cs logic
+            GameObject bullet = Instantiate(bulletPrefab, markerPrefab.position, markerPrefab.rotation);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.linearVelocity = shootingPoint.right * bulletSpeed;
+                rb.linearVelocity = markerPrefab.right * 10f; // Assuming Bullet.cs handles bullet speed and damage
             }
 
             // Trigger shooting animation
             animator.SetTrigger("isShooting");
         }
-
-        // Super Attack function (Commented out)
-        /*
-        private void ShootSuperAttack()
-        {
-            if (superAttackPrefab == null || shootingPoint == null) return;
-
-            GameObject superAttack = Instantiate(superAttackPrefab, shootingPoint.position, shootingPoint.rotation);
-            superAttack.GetComponent<SuperAttack>().PlayAnimationAndDestroy();
-
-            // Trigger shooting animation
-            animator.SetTrigger("isShooting");
-        }
-        */
     }
 }
