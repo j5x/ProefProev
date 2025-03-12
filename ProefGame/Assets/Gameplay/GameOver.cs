@@ -12,6 +12,8 @@ public class GameOverManager : MonoBehaviour
     [SerializeField] private Button restartButton; // Restart button
     [SerializeField] private Button quitButton; // Quit button
 
+    private bool isGameOver = false; // Prevent multiple triggers
+
     private void Start()
     {
         // Subscribe to player's death event
@@ -40,8 +42,11 @@ public class GameOverManager : MonoBehaviour
 
     private void HandleGameOver()
     {
+        if (isGameOver) return; // Prevent multiple triggers
+
+        isGameOver = true;
         Debug.Log("Game Over!");
-        
+
         // Show Game Over UI
         if (gameOverUI != null)
         {
@@ -62,7 +67,16 @@ public class GameOverManager : MonoBehaviour
 
     public void RestartGame()
     {
-        // Hide Game Over UI before reloading
+        // Unsubscribe from the event to prevent duplicate UI flashes
+        if (playerHealth != null)
+        {
+            playerHealth.OnDeath -= HandleGameOver;
+        }
+
+        // Reset state before reloading
+        isGameOver = false;
+
+        // Hide UI before restarting
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(false);
