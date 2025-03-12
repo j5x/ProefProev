@@ -522,7 +522,7 @@ MonoBehaviour:
   - {fileID: 2911825948675045346, guid: 5fde8a39d1d98c5409cd374258d27a1e, type: 3}
   - {fileID: -3420751015425060783, guid: f6d6e4fcea24c9c44bd53f1bbf913c79, type: 3}
   frameRate: 5
-  minimumLoadTime: 20
+  minimumLoadTime: 25
 --- !u!4 &802175390
 Transform:
   m_ObjectHideFlags: 0
@@ -1488,7 +1488,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuMusic: {fileID: 8300000, guid: 05c2e03b3cc36884081b487c81f63d85, type: 3}
-  loadingMusic: {fileID: 8300000, guid: c9002852378576644b9fd464ff831730, type: 3}
+  loadingMusic: {fileID: 8300000, guid: 3bc1c5eca1f89174dbd6314ae0300239, type: 3}
 --- !u!4 &1553132959
 Transform:
   m_ObjectHideFlags: 0
