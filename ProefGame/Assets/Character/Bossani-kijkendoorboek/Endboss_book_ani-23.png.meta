@@ -64,7 +64,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -73,7 +73,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -102,7 +102,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -350,7 +350,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -359,7 +359,17 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Endboss_book_ani-23_0: 3952460248500995258
+      Endboss_book_ani-23_1: 7194725158443353118
+      Endboss_book_ani-23_2: -8121014054260092057
+      Endboss_book_ani-23_3: -4081173727751726558
+      Endboss_book_ani-23_4: -9092930511115591731
+      Endboss_book_ani-23_5: -7031230831833606169
+      Endboss_book_ani-23_6: -6521213861975026769
+      Endboss_book_ani-23_7: -4866666407292311415
+      Endboss_book_ani-23_8: 6138605524532802980
+      Endboss_book_ani-23_9: -8391365322104866751
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
