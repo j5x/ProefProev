@@ -1,32 +1,28 @@
 using System.Collections;
-using Enemy;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Enemy;
 
 public class AuraShield : MonoBehaviour
 {
-    public GameObject shieldPrefab; // The shield prefab to instantiate
-    public float invulnerabilityDuration = 3f; // Duration of invulnerability
-    public float shieldCooldown = 5f; // Cooldown before the shield can be used again
+    public GameObject shieldPrefab;
+    public float invulnerabilityDuration = 3f;
+    public float shieldCooldown = 5f;
 
-    private bool isShieldActive = false; // Is the shield currently active?
-    private bool isOnCooldown = false; // Is the shield on cooldown?
-    private float cooldownEndTime; // Time when the cooldown ends
-
-    private HealthSystem playerHealth; // Reference to the player's HealthSystem component
-    private GameObject shieldInstance; // Reference to the instantiated shield
+    private bool isShieldActive = false;
+    private bool isOnCooldown = false;
+    private GameObject shieldInstance;
+    private Collider2D playerCollider;
 
     private void Awake()
     {
-        // Get the HealthSystem component from the player
-        playerHealth = GetComponent<HealthSystem>();
-        if (playerHealth == null)
+        playerCollider = GetComponent<Collider2D>();
+        if (playerCollider == null)
         {
-            Debug.LogError("HealthSystem component not found on the player!");
+            Debug.LogError("No Collider2D found on player!");
         }
     }
 
-    // Called by the Input System when aura shield is activated
     public void OnAuraShield(InputAction.CallbackContext context)
     {
         if (context.performed && !isShieldActive && !isOnCooldown)
@@ -37,50 +33,52 @@ public class AuraShield : MonoBehaviour
 
     private void ActivateShield()
     {
-        // Instantiate the shield prefab at the player's position
         shieldInstance = Instantiate(shieldPrefab, transform.position, Quaternion.identity);
-        shieldInstance.transform.SetParent(transform); // Make the shield a child of the player
-
-        // Make the player invulnerable
-        playerHealth.SetInvulnerable(true);
-
-        // Set shield state to active
+        shieldInstance.transform.SetParent(transform);
+        
         isShieldActive = true;
+        IgnoreEnemyProjectiles(true);
 
-        // Start the invulnerability timer
         StartCoroutine(DeactivateShieldAfterDuration(invulnerabilityDuration));
-
-        // Start the cooldown timer
         StartCoroutine(StartCooldown(shieldCooldown));
     }
 
     IEnumerator DeactivateShieldAfterDuration(float duration)
     {
-        // Wait for the specified duration
         yield return new WaitForSeconds(duration);
+        
+        isShieldActive = false;
+        IgnoreEnemyProjectiles(false);
 
-        // Make the player vulnerable again
-        playerHealth.SetInvulnerable(false);
-
-        // Destroy the shield instance (if it exists)
         if (shieldInstance != null)
         {
             Destroy(shieldInstance);
         }
-
-        // Set shield state to inactive
-        isShieldActive = false;
     }
 
     IEnumerator StartCooldown(float cooldown)
     {
-        // Set cooldown state to active
         isOnCooldown = true;
-
-        // Wait for the cooldown duration
         yield return new WaitForSeconds(cooldown);
-
-        // Set cooldown state to inactive
         isOnCooldown = false;
+    }
+
+    private void IgnoreEnemyProjectiles(bool ignore)
+    {
+        EnemyProjectile[] enemyProjectiles = FindObjectsOfType<EnemyProjectile>();
+        foreach (var projectile in enemyProjectiles)
+        {
+            Collider2D projectileCollider = projectile.GetComponent<Collider2D>();
+            if (projectileCollider != null)
+            {
+                Physics2D.IgnoreCollision(playerCollider, projectileCollider, ignore);
+            }
+        }
+    }
+
+    //Fix: Make shield status publicly accessible
+    public bool IsShieldActive()
+    {
+        return isShieldActive;
     }
 }

@@ -26,30 +26,28 @@ public class Boss : MonoBehaviour
     // Called when a dummy dies
     public void DummyDied()
     {
-        dummiesAlive--; // Reduce the number of dummies alive
+        dummiesAlive--; 
         Debug.Log($"Dummy died! Dummies left: {dummiesAlive}");
 
-        // Play hit animation
-        if (animator != null)
-        {
-            animator.SetTrigger("Hit");
-        }
-
-        // Calculate the percentage of health to lose
-        float healthLossPercentage = 1f / dummies.Length; // 20% for 5 dummies
+        float healthLossPercentage = 1f / dummies.Length; 
         int healthLoss = Mathf.RoundToInt(maxHealth * healthLossPercentage);
 
-        // Reduce the boss's health
         currentHealth -= healthLoss;
         Debug.Log($"Boss lost {healthLoss} HP! Current HP: {currentHealth}");
 
-        // Check if all dummies are dead
+        // Flash effect when taking damage
+        HitFlash hitFlash = GetComponent<HitFlash>(); 
+        if (hitFlash != null)
+        {
+            hitFlash.Flash();
+        }
+
         if (dummiesAlive <= 0)
         {
             Die();
         }
     }
-
+    
     private void Die()
     {
         Debug.Log("Boss died!");
