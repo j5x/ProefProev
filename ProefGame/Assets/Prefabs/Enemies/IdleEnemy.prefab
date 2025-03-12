@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 8729096885513259538}
   - component: {fileID: 852601842190360546}
   - component: {fileID: 6568116364036140408}
+  - component: {fileID: 8590573434492625394}
   m_Layer: 0
   m_Name: IdleEnemy
   m_TagString: Enemy
@@ -264,3 +265,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.15
+--- !u!114 &8590573434492625394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2618614895094795650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7363c641715f641bf38bd348500b98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 0
+  moveRange: 0
+  damage: 1
+  shootingRange: 5
+  idleDuration: 2
