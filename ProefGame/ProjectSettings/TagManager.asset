@@ -13,6 +13,7 @@ TagManager:
   - Spawn
   - DialogManager
   - Tutorial
+  - BossRoom
   layers:
   - Default
   - TransparentFX
