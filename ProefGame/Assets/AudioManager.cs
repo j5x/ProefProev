@@ -9,7 +9,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip loadingMusic; // Music during loading
 
     private AudioSource audioSource;
-
+        
     private void Awake()
     {
         // Singleton pattern
