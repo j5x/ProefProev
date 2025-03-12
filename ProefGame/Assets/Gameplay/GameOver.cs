@@ -5,57 +5,74 @@ using UnityEngine.UI;
 
 public class GameOverManager : MonoBehaviour
 {
-    [SerializeField] private GameObject gameOverUI; // Reference to the Game Over UI
-    [SerializeField] private HealthSystem playerHealth;
-    [SerializeField] private AudioSource audioSource; // Audio source for sad music
-    [SerializeField] private AudioClip sadMusic; // Assign a sad music clip in the Inspector
-    [SerializeField] private Button restartButton; // UI Button for restarting the game
-    [SerializeField] private Button quitButton; //UI Button for quitting the game
-    void Start()
+    [SerializeField] private GameObject gameOverUI; // Game Over UI
+    [SerializeField] private HealthSystem playerHealth; // Player Health System
+    [SerializeField] private AudioSource audioSource; // Audio Source for music
+    [SerializeField] private AudioClip sadMusic; // Sad music clip
+    [SerializeField] private Button restartButton; // Restart button
+    [SerializeField] private Button quitButton; // Quit button
+
+    private void Start()
     {
+        // Subscribe to player's death event
         if (playerHealth != null)
         {
             playerHealth.OnDeath += HandleGameOver;
         }
 
+        // Ensure Game Over UI is hidden initially
         if (gameOverUI != null)
         {
-            gameOverUI.SetActive(false); // Hide game-over screen at start
+            gameOverUI.SetActive(false);
         }
 
+        // Assign button listeners
         if (restartButton != null)
         {
-            restartButton.onClick.AddListener(RestartGame); // Add restart function to the button
+            restartButton.onClick.AddListener(RestartGame);
         }
+
         if (quitButton != null)
         {
-            quitButton.onClick.AddListener(QuitGame); // Add quit function to the button
+            quitButton.onClick.AddListener(QuitGame);
         }
     }
 
-    void HandleGameOver()
+    private void HandleGameOver()
     {
         Debug.Log("Game Over!");
+        
+        // Show Game Over UI
         if (gameOverUI != null)
         {
-            gameOverUI.SetActive(true); // Show game-over UI
+            gameOverUI.SetActive(true);
         }
-        
-        Time.timeScale = 0f; // Pause the game
 
-        // Play sad music if assigned
+        // Pause the game
+        Time.timeScale = 0f;
+
+        // Play sad music
         if (audioSource != null && sadMusic != null)
         {
             audioSource.clip = sadMusic;
-            audioSource.loop = false; // Optional: Set to false if you don’t want looping
+            audioSource.loop = false;
             audioSource.Play();
         }
     }
 
     public void RestartGame()
     {
+        // Hide Game Over UI before reloading
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(false);
+        }
+
+        // Reset time scale
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload the scene
+
+        // Reload the scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void QuitGame()
