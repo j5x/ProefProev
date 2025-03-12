@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      6 drums flipped_0: 3645647200664678056
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
