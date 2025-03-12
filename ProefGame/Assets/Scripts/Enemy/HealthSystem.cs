@@ -37,6 +37,13 @@ using UnityEngine.UI;
                 currentHealth -= damage;
                 Debug.Log($"{gameObject.name} took {damage} damage! HP left: {currentHealth}");
 
+                // Call the flash effect if the component exists
+                HitFlash hitFlash = GetComponent<HitFlash>(); // Use HitFlashShader if using a shader
+                if (hitFlash != null)
+                {
+                    hitFlash.Flash();
+                }
+
                 UpdateHealthUI();
 
                 if (currentHealth <= 0)

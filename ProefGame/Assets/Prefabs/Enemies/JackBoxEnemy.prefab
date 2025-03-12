@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 9168037552327974819}
   - component: {fileID: 1806950922913705064}
   - component: {fileID: 6514209909155915841}
+  - component: {fileID: -734319986468983383}
   m_Layer: 0
   m_Name: JackBoxEnemy
   m_TagString: Enemy
@@ -268,3 +269,17 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   healthText: {fileID: 0}
   takeDamageButton: {fileID: 0}
+--- !u!114 &-734319986468983383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3082588671109720684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b23597cd542de428eb6ecf2ebd7ecf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.15

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4475921145565757524}
   - component: {fileID: 7437788839479914331}
   - component: {fileID: 5514162150035906033}
+  - component: {fileID: 3849147654423123754}
   m_Layer: 0
   m_Name: WalkingEnemy
   m_TagString: Enemy
@@ -268,3 +269,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &3849147654423123754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6893080089467864458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b23597cd542de428eb6ecf2ebd7ecf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.15
