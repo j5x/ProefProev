@@ -5,30 +5,30 @@ using UnityEngine.UI;
 
 public class GameOverManager : MonoBehaviour
 {
-    [SerializeField] private GameObject gameOverUI; // Game Over UI
-    [SerializeField] private HealthSystem playerHealth; // Player Health System
-    [SerializeField] private AudioSource audioSource; // Audio Source for music
-    [SerializeField] private AudioClip sadMusic; // Sad music clip
-    [SerializeField] private Button restartButton; // Restart button
-    [SerializeField] private Button quitButton; // Quit button
+    [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private HealthSystem playerHealth;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip sadMusic;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button quitButton;
 
-    private bool isGameOver = false; // Prevent multiple triggers
+    private bool isGameOver = false;
+    private Camera mainCamera;
 
     private void Start()
     {
-        // Subscribe to player's death event
+        mainCamera = Camera.main; // Get the main camera
+
         if (playerHealth != null)
         {
             playerHealth.OnDeath += HandleGameOver;
         }
 
-        // Ensure Game Over UI is hidden initially
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(false);
         }
 
-        // Assign button listeners
         if (restartButton != null)
         {
             restartButton.onClick.AddListener(RestartGame);
@@ -42,21 +42,18 @@ public class GameOverManager : MonoBehaviour
 
     private void HandleGameOver()
     {
-        if (isGameOver) return; // Prevent multiple triggers
+        if (isGameOver) return;
 
         isGameOver = true;
         Debug.Log("Game Over!");
 
-        // Show Game Over UI
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(true);
         }
 
-        // Pause the game
         Time.timeScale = 0f;
 
-        // Play sad music
         if (audioSource != null && sadMusic != null)
         {
             audioSource.clip = sadMusic;
@@ -67,26 +64,32 @@ public class GameOverManager : MonoBehaviour
 
     public void RestartGame()
     {
-        // Unsubscribe from the event to prevent duplicate UI flashes
         if (playerHealth != null)
         {
             playerHealth.OnDeath -= HandleGameOver;
         }
 
-        // Reset state before reloading
         isGameOver = false;
 
-        // Hide UI before restarting
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(false);
         }
 
-        // Reset time scale
         Time.timeScale = 1f;
-
-        // Reload the scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        Invoke(nameof(ReassignCamera), 0.1f); // Delay to allow scene load
+    }
+
+    private void ReassignCamera()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null && mainCamera != null)
+        {
+            mainCamera.transform.SetParent(player.transform);
+            mainCamera.transform.localPosition = new Vector3(0, 0, -10); // Adjust for best view
+        }
     }
 
     public void QuitGame()
