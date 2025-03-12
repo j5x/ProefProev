@@ -4,6 +4,7 @@ public class Boss : MonoBehaviour
 {
     public int maxHealth = 100; // Max health of the boss
     private int currentHealth; // Current health of the boss
+    private Animator animator; // Reference to the Animator
 
     public HealthDummy[] dummies; // Array of dummies
     private int dummiesAlive; // Number of dummies still alive
@@ -12,6 +13,7 @@ public class Boss : MonoBehaviour
     {
         currentHealth = maxHealth; // Initialize boss health
         dummiesAlive = dummies.Length; // Initialize number of dummies
+        animator = GetComponent<Animator>(); // Get the Animator component
         Debug.Log($"Boss started with {dummiesAlive} dummies and {currentHealth} HP.");
 
         // Link each dummy to this boss
@@ -26,6 +28,12 @@ public class Boss : MonoBehaviour
     {
         dummiesAlive--; // Reduce the number of dummies alive
         Debug.Log($"Dummy died! Dummies left: {dummiesAlive}");
+
+        // Play hit animation
+        if (animator != null)
+        {
+            animator.SetTrigger("Hit");
+        }
 
         // Calculate the percentage of health to lose
         float healthLossPercentage = 1f / dummies.Length; // 20% for 5 dummies
