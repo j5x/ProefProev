@@ -80,7 +80,7 @@ namespace PauseSystem
             Debug.Log("Game Paused");
         }
 
-        private void ResumeGame()
+        public void ResumeGame()
         {
             Time.timeScale = 1f;
             BackgroundMusicManager.Instance?.SetPaused(false);
