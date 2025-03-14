@@ -14,6 +14,8 @@ public class GameOverManager : MonoBehaviour
 
     private bool isGameOver = false;
     private Camera mainCamera;
+    private Vector3 playerStartPosition;
+    private Quaternion playerStartRotation;
 
     private void Start()
     {
@@ -21,6 +23,8 @@ public class GameOverManager : MonoBehaviour
 
         if (playerHealth != null)
         {
+            playerStartPosition = playerHealth.transform.position;
+            playerStartRotation = playerHealth.transform.rotation;
             playerHealth.OnDeath += HandleGameOver;
         }
 
@@ -60,13 +64,21 @@ public class GameOverManager : MonoBehaviour
             audioSource.loop = false;
             audioSource.Play();
         }
+
+        // STOP BACKGROUND MUSIC WHEN PLAYER DIES
+        if (BackgroundMusicManager.Instance != null)
+        {
+            BackgroundMusicManager.Instance.StopMusic();
+        }
     }
 
     public void RestartGame()
     {
         if (playerHealth != null)
         {
-            playerHealth.OnDeath -= HandleGameOver;
+            playerHealth.OnDeath -= HandleGameOver; // Unsubscribe before resetting
+            ResetPlayer(); // Reset player instead of reloading scene
+            playerHealth.OnDeath += HandleGameOver; // Reattach event after reset
         }
 
         isGameOver = false;
@@ -77,19 +89,27 @@ public class GameOverManager : MonoBehaviour
         }
 
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
-        Invoke(nameof(ReassignCamera), 0.1f); // Delay to allow scene load
+        // STOP SAD MUSIC WHEN RESTARTING
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+
+        // RESTART BACKGROUND MUSIC
+        if (BackgroundMusicManager.Instance != null)
+        {
+            BackgroundMusicManager.Instance.PlayMusic();
+        }
     }
 
-    private void ReassignCamera()
+
+    private void ResetPlayer()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && mainCamera != null)
-        {
-            mainCamera.transform.SetParent(player.transform);
-            mainCamera.transform.localPosition = new Vector3(0, 0, -10); // Adjust for best view
-        }
+        playerHealth.ResetHealth();
+        playerHealth.transform.position = playerStartPosition;
+        playerHealth.transform.rotation = playerStartRotation;
+        playerHealth.gameObject.SetActive(true);
     }
 
     public void QuitGame()

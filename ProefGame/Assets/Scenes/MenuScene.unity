@@ -1098,7 +1098,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuPanel: {fileID: 795287632}
   settingsPanel: {fileID: 858019137}
-  levelToLoad: MainLevel
+  levelToLoad: MainLevel_Def
 --- !u!4 &929719437
 Transform:
   m_ObjectHideFlags: 0
